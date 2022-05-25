@@ -83,7 +83,7 @@
             const nickname = localStorage.getItem('nickname');
             socket.emit('setInit', { nickname }, response =>
                 {
-                    myInfo.nickname = response.nickname;
+                    myInfo.nickname = response.name;
                     myInfo.id = id
                     myInfo.room = response.room;
                     $('.nickname').val(myInfo.nickname);
