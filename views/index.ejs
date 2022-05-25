@@ -80,12 +80,12 @@
             console.log('Connected');
             const id = prompt('아이디를 입력해주세요');
             //연결 완료 후 로컬스토리지를 확인하여 닉네임 세팅
-            const nickname = localStorage.getItem('nickname');
-            socket.emit('setInit', { nickname }, response =>
+            socket.emit('setInit', { id }, response =>
                 {
                     myInfo.nickname = response.name;
-                    myInfo.id = id
+                    myInfo.id = response.id;
                     myInfo.room = response.room;
+
                     $('.nickname').val(myInfo.nickname);
                     $('.roomName').text(myInfo.room.roomName);
                 }
