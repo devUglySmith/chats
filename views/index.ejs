@@ -78,9 +78,9 @@
         const socket = io('http://localhost:8080');
         socket.on('connect', function() {
             console.log('Connected');
-            const id = prompt('아이디를 입력해주세요');
+            const userId = prompt('아이디를 입력해주세요');
             //연결 완료 후 로컬스토리지를 확인하여 닉네임 세팅
-            socket.emit('setInit', { id }, response =>
+            socket.emit('setInit', { userId }, response =>
                 {
                     myInfo.nickname = response.name;
                     myInfo.id = response.id;
