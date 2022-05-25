@@ -42,6 +42,23 @@ const handleSocketConnection = () => {
 }
 
 /*
+* 메세지 전송
+*/
+const handleSocketSendMessage =  ()=>{
+    sendButton.addEventListener("click", ()=>{
+        socket.emit('sendMessage', writeBox.value);
+        writeBox.value = '';
+    })
+
+    writeBox.addEventListener('keypress', (e)=>{
+        if (e.key === 'Enter'){
+            socket.emit('sendMessage', writeBox.value);
+            writeBox.value = '';
+        }
+    })
+}
+
+/*
 * 메세지 읽어오기
  */
 const handleSocketGetMessage = () => {
@@ -117,23 +134,6 @@ const handleSocketJoinRoom = () => {
         chatDisplay.innerHTML = '';
     });
     socket.emit('getChatRoomList', null);
-}
-
-/*
-* 메세지 전송
-*/
-const handleSocketSendMessage =  ()=>{
-    sendButton.addEventListener("click", ()=>{
-        socket.emit('sendMessage', writeBox.value);
-        writeBox.value = '';
-    })
-
-    writeBox.addEventListener('keypress', (e)=>{
-        if (e.key === 'Enter'){
-            socket.emit('sendMessage', writeBox.value);
-            writeBox.value = '';
-        }
-    })
 }
 
 const handleSocketEvent = () => {
