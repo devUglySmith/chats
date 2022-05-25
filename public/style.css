@@ -162,6 +162,15 @@ img {
     width: 100%;
 }
 
+.input_msg_write textarea {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    border: medium none;
+    color: #4c4c4c;
+    font-size: 15px;
+    min-height: 48px;
+    width: 100%;
+}
+
 .type_msg {
     border-top: 1px solid #c4c4c4;
     position: relative;
@@ -200,4 +209,79 @@ img {
 .msg_history {
     height: 516px;
     overflow-y: auto;
+}
+
+.invite-modal{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:30%;
+    height:500px;
+    background:#fff;
+    border:2px solid #e8e8e8;
+    transform: translate(-50%, -80%);
+    opacity: 0;
+    z-index: -1000;
+}
+
+.invite-modal.invite{
+    opacity: 1;
+    z-index:1000;
+}
+
+.invite-modal-body{
+    width:100%;
+    height:100%;
+    overflow: scroll;
+}
+
+.invite-modal-body ul{
+    padding:20px 0;
+}
+
+.invite-modal-body ul li{
+    list-style: none;
+    display:block;
+    width:100%;
+    border-bottom:1px solid #e8e8e8;
+}
+
+.invite-modal-body ul li label{
+    padding:0 20px;
+    cursor: pointer;
+}
+
+.invite-modal-footer{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    border-top:1px solid #e8e8e8
+}
+
+.invite-modal-footer #closeButton{
+    display: block;
+    margin:0 auto;
+    border:0;
+    width:100%;
+    background:#05728f;
+    color:#fff;
+    font-weight: bold;
+    line-height:3;
+}
+
+#inviteRequestButton{
+    width:100px;
+    height:50px;
+    background:#05728f;
+    color:#fff;
+    font-weight: bold;
+    border:0;
+    position: absolute;
+    bottom:50px;
+    left:50%;
+    transform: translate(-50%, -50%);
+    font-size:14px;
+    cursor: pointer;
+    z-index:1000;
 }
