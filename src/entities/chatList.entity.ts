@@ -27,7 +27,7 @@ export class ChatListEntity {
   })
   chatDisplay: string;
 
-  @Column("char", { name: "chat_delyn", comment: "삭제여부", length: 1 })
+  @Column("char", { name: "chat_delyn", comment: "삭제여부", length: 1 , default: ()=> "'N'"})
   chatDelyn: string;
 
   @Column("datetime", {

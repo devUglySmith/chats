@@ -58,7 +58,7 @@ export class ChatBackEndGateway
         );
     }
 
-    //처음 접속시 닉네임 등 최초 설정
+    //처음 접속시 닉네임 등 최초 설정 , 참여한 채팅방 리스트 불러오기
     @SubscribeMessage('setInit')
     async setInit(client: Socket, data: setInitDTO) {
         // 이미 최초 세팅이 되어있는 경우 패스
@@ -68,10 +68,10 @@ export class ChatBackEndGateway
 
         const user = await this.ChatRoomService.getMemberList(data.userId);
         console.log(user);
-        if(!user){
-            return; //error
-        }
 
+        if(!user) return false;
+
+        client.data.no = user.mbNo
         client.data.id = user.mbId
         client.data.nickname = user.mbName
         client.data.isInit = true;
@@ -106,21 +106,11 @@ export class ChatBackEndGateway
 
     //채팅방 생성하기
     @SubscribeMessage('createChatRoom')
-    createChatRoom(client: Socket, roomName: string) {
+    createChatRoom(client: Socket, userList) {
         //이전 방이 만약 나 혼자있던 방이면 제거
-        if (
-            client.data.roomId != 'room:lobby' &&
-            this.server.sockets.adapter.rooms.get(client.data.roomId).size == 1
-        ) {
-            this.ChatRoomService.deleteChatRoom(client.data.roomId);
-        }
+        console.log(userList);
+        this.ChatRoomService.createChatRoom(client, {userList})
 
-        this.ChatRoomService.createChatRoom(client, roomName);
-        return {
-            roomId: client.data.roomId,
-            roomName: this.ChatRoomService.getChatRoom(client.data.roomId)
-                .roomName,
-        };
     }
 
     //채팅방 들어가기
@@ -143,4 +133,11 @@ export class ChatBackEndGateway
             roomName: this.ChatRoomService.getChatRoom(roomId).roomName,
         };
     }
+
+    // 채팅방에 초대할 유저목록 get
+    @SubscribeMessage('inviteUsers')
+    selectInviteUser(client:Socket){
+        return this.ChatRoomService.getAllMemberList(client.data.id);
+    }
+
 }

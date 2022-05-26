@@ -3,13 +3,17 @@ import { chatRoomListDTO } from './dto/chatBackEnd.dto';
 import { Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import {In, Not, Repository} from "typeorm";
 import { MemberEntity } from "../entities/member.entity";
+import {ChatListEntity} from "../entities/chatList.entity";
+import {ChatMemberEntity} from "../entities/chatMember.entity";
 
 @Injectable()
 export class ChatRoomService {
     private readonly chatRoomList: Record<string, chatRoomListDTO>;
-    constructor(@InjectRepository(MemberEntity) private memberRepository:Repository<MemberEntity>) {
+    constructor(@InjectRepository(MemberEntity) private memberRepository:Repository<MemberEntity>,
+                @InjectRepository(ChatListEntity) private chatListRepository:Repository<ChatListEntity>,
+                @InjectRepository(ChatMemberEntity) private chatMemberRepository:Repository<ChatMemberEntity>) {
         this.chatRoomList = {
             'room:lobby': {
                 roomId: 'room:lobby',
@@ -22,24 +26,61 @@ export class ChatRoomService {
     async getMemberList(user:string){
         return await this.memberRepository.findOne({where:{mbId:user}});
     }
-    createChatRoom(client: Socket, roomName: string): void {
-        const roomId = `room:${uuidv4()}`;
-        const nickname: string = client.data.nickname;
-        client.emit('getMessage', {
-            id: null,
-            nickname: '안내',
-            message:
-                '"' + nickname + '"님이 "' + roomName + '"방을 생성하였습니다.',
+
+    async getAllMemberList(id:number){
+        return await this.memberRepository.find({
+            select:[
+                "mbNo",
+                "mbId",
+                "mbName"
+            ],
+            where:{
+                mbId : Not(id)
+            },
         });
-        // return this.chatRoomList[roomId];
-        this.chatRoomList[roomId] = {
-            roomId,
-            cheifId: client.id,
-            roomName,
-        };
-        client.data.roomId = roomId;
-        client.rooms.clear();
-        client.join(roomId);
+    }
+
+    async createChatRoom(client, {userList}) {
+
+        userList.push(client.data.no);
+
+        let roomName;
+        const userNameArr = [];
+        const chatListArr = [];
+
+        // [SELECT] => 초대를 한 유저리스트 불러오기
+        const userData = await this.memberRepository.find({
+            select: [
+                "mbNo",
+                "mbName"
+            ],
+            where:{
+                mbNo: In(userList)
+            }
+        })
+
+        // 채팅방 이름을 만들어주기 위한 배열 삽입
+        userData.forEach(data=>{
+            userNameArr.push(data.mbName)
+        })
+
+        // 방 이름을 문자열로 만들기
+        roomName = userNameArr.join();
+
+        // [INSERT] => 채팅방 생성
+        const chatList = await this.chatListRepository.save({
+            chatRoom : roomName
+        });
+
+        // 채팅방 속한 멤버 배열
+        userData.forEach(data=>{
+            chatListArr.push({'chatNo': chatList.chatNo, 'mbNo': data.mbNo});
+        })
+
+        // [INSERT] => 채팅방에 속한 유저 저장
+        await this.chatMemberRepository.save(chatListArr);
+
+
     }
 
     enterChatRoom(client: Socket, roomId: string) {
@@ -71,8 +112,7 @@ export class ChatRoomService {
         return this.chatRoomList[roomId];
     }
 
-    getChatRoomList(): Record<string, chatRoomListDTO> {
-        return this.chatRoomList;
+    getChatRoomList() {
     }
 
     deleteChatRoom(roomId: string) {
