@@ -1,6 +1,5 @@
-import { Socket } from 'socket.io';
 export class setInitDTO {
-    nickname: string;
+    userId: string;
     room: {
         roomId: string;
         roomName: string;

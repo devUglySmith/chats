@@ -2,14 +2,12 @@ import {
     SubscribeMessage,
     WebSocketGateway,
     WebSocketServer,
-    WsResponse,
     OnGatewayConnection,
     OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatRoomService } from './chatRoom.service';
-import { setInitDTO, chatRoomListDTO } from './dto/chatBackEnd.dto';
-import { Observable, map, from } from 'rxjs';
+import { setInitDTO } from './dto/chatBackEnd.dto';
 
 @WebSocketGateway(8080, {
     cors: {
@@ -62,20 +60,14 @@ export class ChatBackEndGateway
 
     //처음 접속시 닉네임 등 최초 설정
     @SubscribeMessage('setInit')
-    setInit(client: Socket, data: setInitDTO): setInitDTO {
-        // 이미 최초 세팅이 되어있는 경우 패스
-        if (client.data.isInit) {
-            return;
-        }
+    async setInit(client: Socket, data: setInitDTO) {
 
-        client.data.nickname = data.nickname
-            ? data.nickname
-            : '어글리스미스' + client.id;
-
-        client.data.isInit = true;
+        const user = await this.ChatRoomService.getMemberList(data.userId);
+        // console.log(user.mbId);
 
         return {
-            nickname: client.data.nickname,
+            name: user.mbName,
+            id:user.mbId,
             room: {
                 roomId: 'room:lobby',
                 roomName: '로비',

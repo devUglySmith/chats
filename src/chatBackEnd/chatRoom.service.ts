@@ -2,11 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { chatRoomListDTO } from './dto/chatBackEnd.dto';
 import { Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { MemberEntity } from "../entities/member.entity";
 
 @Injectable()
 export class ChatRoomService {
     private readonly chatRoomList: Record<string, chatRoomListDTO>;
-    constructor() {
+    constructor(@InjectRepository(MemberEntity) private memberRepository:Repository<MemberEntity>) {
         this.chatRoomList = {
             'room:lobby': {
                 roomId: 'room:lobby',
@@ -14,6 +17,10 @@ export class ChatRoomService {
                 cheifId: null,
             },
         };
+    }
+
+    async getMemberList(user:string){
+        return await this.memberRepository.findOne({where:{mbId:user}});
     }
     createChatRoom(client: Socket, roomName: string): void {
         const roomId = `room:${uuidv4()}`;
