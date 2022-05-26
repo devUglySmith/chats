@@ -26,6 +26,7 @@ const handleSocketConnection = () => {
     socket.on('connect', function () {
         try {
             const userId = prompt('아이디를 입력해주세요')
+            //userId 체크필요
             console.log('connected')
             socket.emit('setInit', {userId}, response => {
                     chatUserInfo.nickname = response.name;

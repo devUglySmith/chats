@@ -63,7 +63,7 @@ export class ChatBackEndGateway
     async setInit(client: Socket, data: setInitDTO) {
 
         const user = await this.ChatRoomService.getMemberList(data.userId);
-        // console.log(user.mbId);
+        console.log(user);
         if(!user){
             return ; //error
         }
