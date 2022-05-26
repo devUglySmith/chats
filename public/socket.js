@@ -25,21 +25,26 @@ const handleSocketConnection = () => {
     //         const socket = io('http://chattalk.uglysmith.co.kr:5000');
     const userId = prompt('아이디를 입력해주세요');
 
-    socket.on('connect', function () {
-        try {
-            console.log('connected')
-            socket.emit('setInit', {userId}, response => {
-                    chatUserInfo.nickname = response.name;
-                    chatUserInfo.id = response.id;
-                    chatUserInfo.room = response.room;
-                }
-            );
-            socket.emit('getChatRoomList', null);
+    if (userId){
+        socket.on('connect', function () {
+            try {
+                console.log('connected')
+                socket.emit('setInit', {userId}, response => {
+                        chatUserInfo.nickname = response.name;
+                        chatUserInfo.id = response.id;
+                        chatUserInfo.room = response.room;
+                    }
+                );
+                socket.emit('getChatRoomList', null);
 
-        }catch (e){
-            console.log(e)
-        }
-    });
+            }catch (e){
+                console.log(e)
+            }
+        });
+    }else{
+        alert('아이디를 입력해주세요.');
+        location.reload();
+    }
 }
 
 /*
