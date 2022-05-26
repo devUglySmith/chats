@@ -64,7 +64,9 @@ export class ChatBackEndGateway
 
         const user = await this.ChatRoomService.getMemberList(data.userId);
         // console.log(user.mbId);
-
+        if(!user){
+            return ; //error
+        }
         return {
             name: user.mbName,
             id:user.mbId,
