@@ -61,12 +61,20 @@ export class ChatBackEndGateway
     //처음 접속시 닉네임 등 최초 설정
     @SubscribeMessage('setInit')
     async setInit(client: Socket, data: setInitDTO) {
+        // 이미 최초 세팅이 되어있는 경우 패스
+        if (client.data.isInit) {
+            return;
+        }
 
         const user = await this.ChatRoomService.getMemberList(data.userId);
         console.log(user);
         if(!user){
-            return ; //error
+            return; //error
         }
+
+        client.data.nickname = user.mbName
+        client.data.isInit = true;
+
         return {
             name: user.mbName,
             id:user.mbId,
