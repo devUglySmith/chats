@@ -51,7 +51,7 @@ export class ChatBackEndGateway
     sendMessage(client: Socket, message: string): void {
         client.rooms.forEach((roomId) =>
             client.to(roomId).emit('getMessage', {
-                id: client.id,
+                id: client.data.id,
                 nickname: client.data.nickname,
                 message,
             }),
@@ -72,6 +72,7 @@ export class ChatBackEndGateway
             return; //error
         }
 
+        client.data.id = user.mbId
         client.data.nickname = user.mbName
         client.data.isInit = true;
 
