@@ -30,6 +30,7 @@
     "@nestjs/typeorm": "^8.0.4",
     "@nestjs/websockets": "^8.0.3",
     "@types/ws": "^7.4.6",
+    "dicer": "^0.3.1",
     "joi": "^17.6.0",
     "mo": "^1.7.3",
     "mysql2": "^2.3.3",
