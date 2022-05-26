@@ -16,13 +16,13 @@ let chatUserInfo = {
     }
 }
 
-const socket = io('http://localhost:8080');
+const socket = io('http://192.168.0.92:8080');
 
 /*
 * 소켓서버 연결
  */
 const handleSocketConnection = () => {
-    //         const socket = io('http://chattalk.uglysmith.co.kr:5000');
+            // const socket = io('http://chattalk.uglysmith.co.kr:5000');
     const userId = prompt('아이디를 입력해주세요');
 
     if (userId){
