@@ -22,8 +22,8 @@ let members;
 let chatList;
 let userList = [];
 
-const socket = io('http://localhost:8080');
-// const socket = io('http://192.168.0.37:8080');
+// const socket = io('http://localhost:8080');
+const socket = io('http://192.168.0.37:8080');
 // const socket = io('http://chattalk.uglysmith.co.kr:8080');
 
 /*
@@ -110,8 +110,8 @@ const handleSocketGetMessage = () => {
  * 참여하고 있는 채팅방 리스트 가져오기
  * */
 const handleSocketGetRoomList = () => {
+        chatRoomList.innerHTML = '';
         let html = '';
-        console.log(chatUserInfo.room);
         for (const {chatNo, chatRoom} of Object.values(chatUserInfo.room)) {
             html += '<div class="chat_list enterChatRoom' + '" data-roomId="' + chatNo + '">';
             html += '<div class="chat_people">';
@@ -170,6 +170,8 @@ const handleSocketEvent = () => {
 
     socket.on('getNewChatList', (res)=>{
         console.log(res);
+        chatUserInfo.room = res;
+        handleSocketGetRoomList()
     })
     socket.on('disconnect', function () {
         chatRoomList.innerHTML = '';
