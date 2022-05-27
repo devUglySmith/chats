@@ -36,12 +36,15 @@ const handleSocketConnection = () => {
         socket.on('connect', function () {
             try {
                 console.log('connected')
+                // 로그인 후 초기 세팅
                 socket.emit('setInit', {userId}, response => {
-                    console.log(response);
                         if (response){
+                            // 유저 정보 가져와서 초기 세팅
                             chatUserInfo.nickname = response.name;
                             chatUserInfo.id = response.id;
                             chatUserInfo.room = response.room;
+
+                            // 내가 속한 모든 방 가져오기
                             handleSocketGetRoomList();
                         }else{
                             alert('아이디를 확인해주세요.');
@@ -49,8 +52,6 @@ const handleSocketConnection = () => {
                         }
                     }
                 );
-
-
             } catch (e) {
                 console.log(e)
             }
@@ -75,8 +76,6 @@ const handleSocketSendMessage = () => {
 
             socket.emit('sendMessage', sendInfo);
             writeBox.value = '';
-
-
         }
     })
 
@@ -102,6 +101,7 @@ const handleSocketSendMessage = () => {
  */
 const handleSocketGetMessage = () => {
     socket.on('getMessage', (res) => {
+        //메세지 가져오기
         drawMessage(chatUserInfo, res);
     })
 }
@@ -110,36 +110,31 @@ const handleSocketGetMessage = () => {
  * 참여하고 있는 채팅방 리스트 가져오기
  * */
 const handleSocketGetRoomList = () => {
-        chatRoomList.innerHTML = '';
-        let html = '';
-        for (const {chatNo, chatRoom} of Object.values(chatUserInfo.room)) {
-            html += '<div class="chat_list enterChatRoom' + '" data-roomId="' + chatNo + '">';
-            html += '<div class="chat_people">';
-            html += '<div class="chat_ib">';
-            html += '<h5>' + chatRoom + '</h5>';
-            html += '</div>';
-            html += '</div>';
-            html += '</div>';
-        }
-        chatRoomList.innerHTML += html
-
-        chatList = document.querySelectorAll('.enterChatRoom');
-
+    chatRoomList.innerHTML = '';
+    let html = '';
+    //채팅방 가져오기
+    for (const {chatNo, chatRoom} of Object.values(chatUserInfo.room)) {
+        html += '<div class="chat_list enterChatRoom' + '" data-roomId="' + chatNo + '">';
+        html += '<div class="chat_people">';
+        html += '<div class="chat_ib">';
+        html += '<h5>' + chatRoom + '</h5>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+    }
+    chatRoomList.innerHTML += html
+    chatList = document.querySelectorAll('.enterChatRoom');
+    //채팅방 입장
     chatList.forEach(room=>{
         room.addEventListener('click', handleSocketJoinRoom);
     })
-
 }
 
 /*
  * 채팅방 초대 (방 생성)
  */
 const handleSocketInviteRoom = () => {
-    socket.on('createChatRoom', userList, (res) => {
-        if (!res) return;
-
-    });
-
+    socket.on('createChatRoom', userList);
 }
 
 
@@ -157,7 +152,7 @@ const handleSocketJoinRoom = (e) => {
             data.classList.remove('active_chat');
         })
         thisRoom.classList.add('active_chat');
-
+        //메세지 가져오기
         drawMessage(chatUserInfo,res)
     });
 }
@@ -168,6 +163,7 @@ const handleSocketEvent = () => {
     handleSocketSendMessage();
     handleSocketGetMessage();
 
+    // 실시간 초대된 채팅방 가져오기
     socket.on('getNewChatList', (res)=>{
         console.log(res);
         chatUserInfo.room = res;
@@ -187,6 +183,8 @@ const handleInviteEvent = () => {
     inviteButton.addEventListener("click", () => {
         ul.innerHTML = '';
         inviteModal.classList.add("invite");
+
+        //초대할 유저 리스트 생성
         socket.emit('inviteUsers', null, (response) => {
             response.forEach((user, i) => {
                 const li = document.createElement("li");
@@ -210,6 +208,7 @@ const handleInviteEvent = () => {
 
                 members = document.querySelectorAll(".user-checkbox");
 
+                // 유저 클릭 체크 확인 이벤트
                 members[i].addEventListener('click', function(){
                     let userNo = parseInt(this.getAttribute('data-no'));
                     if (!this.checked){
@@ -225,6 +224,7 @@ const handleInviteEvent = () => {
         })
     })
 
+    // 유저 초대하기
     inviteJoinButton.addEventListener("click", ()=>{
         console.log(userList);
         if (userList.length !== 0){
@@ -232,6 +232,8 @@ const handleInviteEvent = () => {
 
             alert('초대를 완료했습니다.');
             inviteModal.classList.remove("invite");
+
+            // 채팅방 생성 및 초대
             handleSocketInviteRoom();
             userList = [];
         }else{
@@ -241,11 +243,12 @@ const handleInviteEvent = () => {
 
     })
 
+      // 초대창 닫기
     inviteCloseButton.addEventListener("click", () => {
         inviteModal.classList.remove("invite");
     })
 }
 
-
+// 이벤트 호출
 handleSocketEvent();
 handleInviteEvent();

@@ -48,16 +48,13 @@ export class ChatBackEndGateway
         console.log('disonnected', client.id);
     }
 
-    //메시지가 전송되면 모든 유저에게 메시지 전송
+    //내가 속한 방에 메세지 전송
     @SubscribeMessage('sendMessage')
     async sendMessage(client: Socket, sendInfo) {
-        console.log(sendInfo);
-
         await this.ChatRoomService.createChatMessage(client,sendInfo);
-
     }
 
-    //처음 접속시 닉네임 등 최초 설정 , 참여한 채팅방 리스트 불러오기
+    //처음 접속 시 참여한 채팅방 리스트 불러오기
     @SubscribeMessage('setInit')
     async setInit(client: Socket, data: setInitDTO) {
         // 이미 최초 세팅이 되어있는 경우 패스
@@ -66,18 +63,19 @@ export class ChatBackEndGateway
         }
 
         const user = await this.ChatRoomService.getMemberList(data.userId);
-        // console.log(user);
 
         if(!user) return false;
 
+        // 로그인 한 유저 정보 초기 세팅
         client.data.no = user.mbNo
         client.data.id = user.mbId
         client.data.nickname = user.mbName
         client.data.isInit = true;
 
-        const roomList = await this.ChatRoomService.getChatRoomList(client.data.no);
-        // console.log(roomList);
 
+        const roomList = await this.ChatRoomService.getChatRoomList(client.data.no);
+
+        // 로그인 한 유저 고유 No로 접속
         client.join(client.data.no);
 
         return {
@@ -89,7 +87,7 @@ export class ChatBackEndGateway
 
     //채팅방 목록 가져오기
     @SubscribeMessage('getChatRoomList')
-    async getChatRoomList(client: Socket, payload: any) {
+    async getChatRoomList(client: Socket) {
         client.emit('getChatRoomList', await this.ChatRoomService.getChatRoomList(client.data.no));
     }
 
@@ -107,7 +105,6 @@ export class ChatBackEndGateway
         if (client.rooms.has(roomId)) {
             return;
         }
-
 
         return await this.ChatRoomService.enterChatRoom(client, roomId);
     }

@@ -4,6 +4,7 @@ const setAttribute =(el, attrs)=>{
     }
 }
 
+// 메세지 가져오기
 const drawMessage = (chatUserInfo, res)=>{
     console.log(res);
 
