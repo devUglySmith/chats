@@ -12,10 +12,9 @@ export class ChatListEntity {
   })
   chatNo: number;
 
-  @Column("varchar", {
+  @Column("text", {
     name: "chat_room",
     comment: "channel 명 ????_chat_list ID + centerCd",
-    length: 30,
   })
   chatRoom: string;
 
