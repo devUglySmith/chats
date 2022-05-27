@@ -17,7 +17,7 @@ export class DatabaseService {
             entities: [__dirname + '/**/*.entity{.ts,.js}', 'dist/**/*.entity{.ts,.js}'],
             synchronize: false,
             autoLoadEntities: true,
-            logging:true
+            logging:false,
         }
 
     }

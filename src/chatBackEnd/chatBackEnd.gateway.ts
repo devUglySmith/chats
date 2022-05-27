@@ -42,7 +42,7 @@ export class ChatBackEndGateway
             this.ChatRoomService.deleteChatRoom(roomId);
             this.server.emit(
                 'getChatRoomList',
-                this.ChatRoomService.getChatRoomList(client),
+                this.ChatRoomService.getChatRoomList(client.data.no),
             );
         }
         console.log('disonnected', client.id);
@@ -75,8 +75,10 @@ export class ChatBackEndGateway
         client.data.nickname = user.mbName
         client.data.isInit = true;
 
-        const roomList = await this.ChatRoomService.getChatRoomList(client);
+        const roomList = await this.ChatRoomService.getChatRoomList(client.data.no);
         // console.log(roomList);
+
+        client.join(client.data.no);
 
         return {
             name: user.mbName,
@@ -88,15 +90,14 @@ export class ChatBackEndGateway
     //채팅방 목록 가져오기
     @SubscribeMessage('getChatRoomList')
     async getChatRoomList(client: Socket, payload: any) {
-        client.emit('getChatRoomList', await this.ChatRoomService.getChatRoomList(client));
+        client.emit('getChatRoomList', await this.ChatRoomService.getChatRoomList(client.data.no));
     }
 
     //채팅방 생성하기
     @SubscribeMessage('createChatRoom')
      async createChatRoom(client: Socket, userList) {
         await this.ChatRoomService.createChatRoom(client, {userList})
-
-        return  await this.ChatRoomService.getChatRoomList(client);
+        return  await this.ChatRoomService.getChatRoomList(client.data.no);
     }
 
     //채팅방 들어가기

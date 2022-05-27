@@ -76,18 +76,20 @@ export class ChatRoomService {
         // 채팅방 속한 멤버 배열
         userData.forEach(data=>{
             chatListArr.push({'chatNo': chatList.chatNo, 'mbNo': data.mbNo});
+            const members = this.getChatRoomList(data.mbNo);
+            console.log(members);
+            client.to(data.mbNo).emit('getNewChatList', members);
         })
 
         // [INSERT] => 채팅방에 속한 유저 저장
         await this.chatMemberRepository.save(chatListArr);
 
-
     }
 
-    async getChatRoomList(client) {
+    async getChatRoomList(clientNo) {
         //내가 속한 채팅방 가져오기
         let chatNoArr = [];
-        const chatNo = await this.chatMemberRepository.find({select:["chatNo"],where:{mbNo:client.data.no}});
+        const chatNo = await this.chatMemberRepository.find({select:["chatNo"],where:{mbNo:clientNo}});
 
         chatNo.forEach(data=>{
             chatNoArr.push({'chatNo':data.chatNo,'chatDisplay':'Y','chatDelyn':'N'})

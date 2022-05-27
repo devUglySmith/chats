@@ -20,11 +20,11 @@ let chatUserInfo = {
 
 let members;
 let chatList;
-const userList = [];
+let userList = [];
 
 const socket = io('http://localhost:8080');
-// const socket = io('http://192.168.0.92:8080');
-// const socket = io('http://chattalk.uglysmith.co.kr:5000');
+// const socket = io('http://192.168.0.37:8080');
+// const socket = io('http://chattalk.uglysmith.co.kr:8080');
 
 /*
 * 소켓서버 연결
@@ -135,12 +135,11 @@ const handleSocketGetRoomList = () => {
  * 채팅방 초대 (방 생성)
  */
 const handleSocketInviteRoom = () => {
-    socket.emit('createChatRoom', userList, (res) => {
+    socket.on('createChatRoom', userList, (res) => {
         if (!res) return;
-        chatUserInfo.room = res;
-        chatDisplay.innerHTML = '';
+
     });
-    socket.emit('getChatRoomList', null);
+
 }
 
 
@@ -169,6 +168,9 @@ const handleSocketEvent = () => {
     handleSocketSendMessage();
     handleSocketGetMessage();
 
+    socket.on('getNewChatList', (res)=>{
+        console.log(res);
+    })
     socket.on('disconnect', function () {
         chatRoomList.innerHTML = '';
         console.log('Disconnected');
@@ -228,6 +230,8 @@ const handleInviteEvent = () => {
 
             alert('초대를 완료했습니다.');
             inviteModal.classList.remove("invite");
+            handleSocketInviteRoom();
+            userList = [];
         }else{
             alert('초대할 멤버를 체크해주세요.');
             return false;
