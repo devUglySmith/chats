@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import { ChatMemberEntity } from "./chatMember.entity";
 import { ChatMessageEntity } from "./chatMessage.entity";
 
@@ -130,7 +130,7 @@ export class MemberEntity {
   })
   mbDelyn: string;
 
-  @Column("datetime", {
+  @CreateDateColumn({
     name: "mb_date",
     comment: "가입일",
     default: () => "CURRENT_TIMESTAMP",

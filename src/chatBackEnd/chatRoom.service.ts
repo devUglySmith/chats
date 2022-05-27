@@ -107,7 +107,7 @@ export class ChatRoomService {
         const chatMessage = await getRepository(ChatMessageEntity).createQueryBuilder('chat')
           .where('chat.chatNo=:roomId',{roomId:roomId})
           .andWhere('chat.cmDelyn=:cmDelYn',{cmDelYn:'N'})
-          .select(["chat.cmContent AS message","chat.cmRegdate AS messageDate","chat.mbNo AS id","member.mbName AS nickname"])
+          .select(["chat.cmContent AS message","chat.cmRegdate AS messageDate","member.mbId AS id","member.mbName AS nickname"])
           .leftJoin('chat.mbNo2','member')
           .getRawMany();
         console.log(chatMessage);

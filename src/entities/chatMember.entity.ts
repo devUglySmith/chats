@@ -1,4 +1,4 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
+import {Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne} from "typeorm";
 import { ChatListEntity } from "./chatList.entity";
 import { MemberEntity } from "./member.entity";
 
@@ -19,7 +19,7 @@ export class ChatMemberEntity {
   })
   mbNo: number;
 
-  @Column("datetime", {
+  @CreateDateColumn( {
     name: "chat_regdate",
     nullable: true,
     comment: "등록일",

@@ -1,5 +1,5 @@
 import {
-  Column,
+  Column, CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -49,7 +49,7 @@ export class ChatFilesEntity {
   })
   cfEndate: Date | null;
 
-  @Column("datetime", {
+  @CreateDateColumn({
     name: "cf_regdate",
     nullable: true,
     comment: "등록일",

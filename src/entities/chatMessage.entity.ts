@@ -1,5 +1,5 @@
 import {
-  Column,
+  Column, CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -31,7 +31,7 @@ export class ChatMessageEntity {
   })
   cmDelyn: string;
 
-  @Column("datetime", {
+  @CreateDateColumn( {
     name: "cm_regdate",
     comment: "등록일",
     default: () => "CURRENT_TIMESTAMP",
