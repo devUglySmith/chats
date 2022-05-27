@@ -219,6 +219,9 @@ const handleInviteEvent = () => {
     inviteJoinButton.addEventListener("click", ()=>{
         console.log(userList);
         socket.emit('createChatRoom', userList);
+
+        alert('초대를 완료했습니다.');
+        inviteModal.classList.remove("invite");
     })
 
     inviteCloseButton.addEventListener("click", () => {
