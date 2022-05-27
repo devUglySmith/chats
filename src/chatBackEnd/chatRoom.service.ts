@@ -2,17 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { chatRoomListDTO } from './dto/chatBackEnd.dto';
 import { Socket } from 'socket.io';
 import { InjectRepository } from "@nestjs/typeorm";
-import {In, Not, Repository} from "typeorm";
+import { getRepository, In, Not, Repository } from "typeorm";
 import { MemberEntity } from "../entities/member.entity";
 import {ChatListEntity} from "../entities/chatList.entity";
 import {ChatMemberEntity} from "../entities/chatMember.entity";
+import { ChatMessageEntity } from "../entities/chatMessage.entity";
 
 @Injectable()
 export class ChatRoomService {
     private readonly chatRoomList: Record<string, chatRoomListDTO>;
     constructor(@InjectRepository(MemberEntity) private memberRepository:Repository<MemberEntity>,
                 @InjectRepository(ChatListEntity) private chatListRepository:Repository<ChatListEntity>,
-                @InjectRepository(ChatMemberEntity) private chatMemberRepository:Repository<ChatMemberEntity>) {
+                @InjectRepository(ChatMemberEntity) private chatMemberRepository:Repository<ChatMemberEntity>,
+                @InjectRepository(ChatMessageEntity) private chatMessageRepository:Repository<ChatMessageEntity>) {
         this.chatRoomList = {
             'room:lobby': {
                 roomId: 'room:lobby',
@@ -95,17 +97,22 @@ export class ChatRoomService {
 
     }
 
-    enterChatRoom(client: Socket, roomId: string) {
+    async enterChatRoom(client: Socket, roomId) {
         client.data.roomId = roomId;
         client.rooms.clear();
         client.join(roomId);
-        const { nickname } = client.data;
-        const { roomName } = this.getChatRoom(roomId);
-        client.to(roomId).emit('getMessage', {
-            id: null,
-            nickname: '안내',
-            message: `"${nickname}"님이 "${roomName}"방에 접속하셨습니다.`,
-        });
+
+        // const chatMessage = await this.chatMessageRepository.find({select:['cmContent','cmRegdate','mbNo'],where:{chatNo:roomId,cmDelyn:'N'},order:{cmRegdate:'DESC'},relations:['mbNo2.mbName']})
+
+        const chatMessage = await getRepository(ChatMessageEntity).createQueryBuilder('chat')
+          .where('chat.chatNo=:roomId',{roomId:roomId})
+          .andWhere('chat.cmDelyn=:cmDelYn',{cmDelYn:'N'})
+          .select("chat.cmContent","message")
+          .leftJoin('chat.mbNo2','member')
+          .getMany();
+        console.log(chatMessage);
+
+        return chatMessage;
     }
 
     exitChatRoom(client: Socket, roomId: string) {
@@ -120,8 +127,17 @@ export class ChatRoomService {
         });
     }
 
-    getChatRoom(roomId: string): chatRoomListDTO {
-        return this.chatRoomList[roomId];
+    async createChatMessage(client,sendInfo){
+
+        const chatData = {'cmContent':sendInfo.message,'chatNo':sendInfo.chatNo,'mbNo':client.data.no}
+        const chatMessage = await this.chatMessageRepository.save(chatData);
+
+        client.to(sendInfo.chatNo).emit('getMessage', {
+            id: client.data.id,
+            nickname: client.data.nickname,
+            message: sendInfo.message,
+            messageDate:chatMessage.cmRegdate
+        });
     }
 
 

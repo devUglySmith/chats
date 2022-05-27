@@ -22,7 +22,7 @@ let members;
 let chatList;
 const userList = [];
 
-const socket = io('http://localhost:8080');
+const socket = io('http://192.168.0.92:8080');
 // const socket = io('http://chattalk.uglysmith.co.kr:5000');
 
 /*
@@ -65,17 +65,32 @@ const handleSocketConnection = () => {
 */
 const handleSocketSendMessage = () => {
     sendButton.addEventListener("click", () => {
+        if (!chatUserInfo.room.roomId) {
+            alert('방에 입장해주세요.');
+            return false;
+        }
         if (writeBox.value) {
-            socket.emit('sendMessage', writeBox.value);
+            const sendInfo = {'chatNo':chatUserInfo.room.roomId,'message':writeBox.value};
+
+            socket.emit('sendMessage', sendInfo);
             writeBox.value = '';
+
+
         }
     })
 
     writeBox.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            if (writeBox.value) {
-                socket.emit('sendMessage', writeBox.value);
+            if (!chatUserInfo.room.roomId) {
+                alert('방에 입장해주세요.');
+                return false;
+            }
+            if (chatUserInfo.room.roomId && writeBox.value) {
+                const sendInfo = {'chatNo':chatUserInfo.room.roomId,'message':writeBox.value};
+
+                socket.emit('sendMessage', sendInfo);
                 writeBox.value = '';
+
             }
         }
     })
@@ -85,31 +100,9 @@ const handleSocketSendMessage = () => {
 * 메세지 읽어오기
  */
 const handleSocketGetMessage = () => {
-    socket.on('getMessage', function ({id, nickname, message}) {
-        let html = '';
-        // 내 메세지
-        if (chatUserInfo.id === id) {
-            html += '<div class="outgoing_msg">';
-            html += '<div class="sent_msg">';
-            html += '<p>' + message + '</p>';
-            html += '<span class="time_date"> ' + nickname + '    | 11:01 AM    |    June 9</span>';
-            html += '</div>';
-            html += '</div>';
-        } else {
-            // 상대방 메세지
-            html += '<div class="incoming_msg">';
-            html += '<div class="received_msg">';
-            html += '<div class="received_withd_msg">';
-            html += '<p>' + message + '</p>';
-            html += '<span class="time_date"> ' + nickname + '    | 11:01 AM    |    June 9</span>';
-            html += '</div>';
-            html += '</div>';
-            html += '</div>';
-        }
-        chatDisplay.innerHTML += html;
-        chatDisplay.scrollTop = chatDisplay.scrollHeight;
-
-    });
+    socket.on('getMessage', (res) => {
+        drawMessage(chatUserInfo, res);
+    })
 }
 
 /*
@@ -119,7 +112,7 @@ const handleSocketGetRoomList = () => {
         let html = '';
         console.log(chatUserInfo.room);
         for (const {chatNo, chatRoom} of Object.values(chatUserInfo.room)) {
-            html += '<div class="chat_list ' + (chatUserInfo.room.chatNo === chatNo ? 'active_chat' : 'enterChatRoom') + '" data-roomId="' + chatNo + '">';
+            html += '<div class="chat_list enterChatRoom' + '" data-roomId="' + chatNo + '">';
             html += '<div class="chat_people">';
             html += '<div class="chat_ib">';
             html += '<h5>' + chatRoom + '</h5>';
@@ -154,21 +147,26 @@ const handleSocketInviteRoom = () => {
  * 채팅방 입장
  */
 const handleSocketJoinRoom = (e) => {
-    const thisRoomId =e.currentTarget.getAttribute('data-roomId');
+    const thisRoomId = e.currentTarget.getAttribute('data-roomId');
+    const thisRoom = e.currentTarget;
     socket.emit('enterChatRoom', thisRoomId, (res) => {
         if (!res) return;
-        chatUserInfo.room = res;
         chatDisplay.innerHTML = '';
+        chatUserInfo.room.roomId = thisRoomId;
+        chatList.forEach(data=>{
+            data.classList.remove('active_chat');
+        })
+        thisRoom.classList.add('active_chat');
+
+        drawMessage(chatUserInfo,res)
     });
-    socket.emit('getChatRoomList', null);
 }
 
 const handleSocketEvent = () => {
 
     handleSocketConnection();
-    handleSocketGetMessage();
-
     handleSocketSendMessage();
+    handleSocketGetMessage();
 
     socket.on('disconnect', function () {
         chatRoomList.innerHTML = '';

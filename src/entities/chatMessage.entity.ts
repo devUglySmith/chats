@@ -20,9 +20,6 @@ export class ChatMessageEntity {
   })
   cmNo: number;
 
-  @Column("int", { name: "cm_sender", comment: "메세지보낸사람" })
-  cmSender: number;
-
   @Column("text", { name: "cm_content", nullable: true, comment: "전달내용" })
   cmContent: string | null;
 
@@ -40,13 +37,6 @@ export class ChatMessageEntity {
     default: () => "CURRENT_TIMESTAMP",
   })
   cmRegdate: Date;
-
-  @Column("datetime", {
-    name: "cm_write",
-    nullable: true,
-    comment: "수신자가 읽은 날짜",
-  })
-  cmWrite: Date | null;
 
   @Column("int", { name: "chat_no", comment: "????__chat_list ID" })
   chatNo: number;

@@ -50,14 +50,11 @@ export class ChatBackEndGateway
 
     //메시지가 전송되면 모든 유저에게 메시지 전송
     @SubscribeMessage('sendMessage')
-    sendMessage(client: Socket, message: string) {
-        client.rooms.forEach((roomId) =>
-            client.to(roomId).emit('getMessage', {
-                id: client.data.id,
-                nickname: client.data.nickname,
-                message,
-            }),
-        );
+    async sendMessage(client: Socket, sendInfo) {
+        console.log(sendInfo);
+
+        await this.ChatRoomService.createChatMessage(client,sendInfo);
+
     }
 
     //처음 접속시 닉네임 등 최초 설정 , 참여한 채팅방 리스트 불러오기
@@ -99,28 +96,19 @@ export class ChatBackEndGateway
      async createChatRoom(client: Socket, userList) {
         await this.ChatRoomService.createChatRoom(client, {userList})
 
-
+        return  await this.ChatRoomService.getChatRoomList(client);
     }
 
     //채팅방 들어가기
     @SubscribeMessage('enterChatRoom')
-    enterChatRoom(client: Socket, roomId: string) {
+     async enterChatRoom(client: Socket, roomId: string) {
         //이미 접속해있는 방 일 경우 재접속 차단
         if (client.rooms.has(roomId)) {
             return;
         }
-        //이전 방이 만약 나 혼자있던 방이면 제거
-        if (
-            client.data.roomId != 'room:lobby' &&
-            this.server.sockets.adapter.rooms.get(client.data.roomId).size == 1
-        ) {
-            this.ChatRoomService.deleteChatRoom(client.data.roomId);
-        }
-        this.ChatRoomService.enterChatRoom(client, roomId);
-        return {
-            roomId: roomId,
-            roomName: this.ChatRoomService.getChatRoom(roomId).roomName,
-        };
+
+
+        return await this.ChatRoomService.enterChatRoom(client, roomId);
     }
 
     // 채팅방에 초대할 유저목록 get
