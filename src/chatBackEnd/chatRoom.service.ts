@@ -107,9 +107,9 @@ export class ChatRoomService {
         const chatMessage = await getRepository(ChatMessageEntity).createQueryBuilder('chat')
           .where('chat.chatNo=:roomId',{roomId:roomId})
           .andWhere('chat.cmDelyn=:cmDelYn',{cmDelYn:'N'})
-          .select("chat.cmContent","message")
+          .select(["chat.cmContent AS message","chat.cmRegdate AS messageDate","chat.mbNo AS id","member.mbName AS nickname"])
           .leftJoin('chat.mbNo2','member')
-          .getMany();
+          .getRawMany();
         console.log(chatMessage);
 
         return chatMessage;
@@ -132,12 +132,12 @@ export class ChatRoomService {
         const chatData = {'cmContent':sendInfo.message,'chatNo':sendInfo.chatNo,'mbNo':client.data.no}
         const chatMessage = await this.chatMessageRepository.save(chatData);
 
-        client.to(sendInfo.chatNo).emit('getMessage', {
+        client.to(sendInfo.chatNo).emit('getMessage', [{
             id: client.data.id,
             nickname: client.data.nickname,
             message: sendInfo.message,
             messageDate:chatMessage.cmRegdate
-        });
+        }]);
     }
 
 
