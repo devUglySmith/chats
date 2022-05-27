@@ -18,23 +18,16 @@ let chatUserInfo = {
     }
 }
 
-<<<<<<< HEAD
-const socket = io('http://192.168.0.92:8080');
-=======
 let members;
 const userList = [];
->>>>>>> c7d565e (feat 채팅방 초대 및 초대한 멤버 리스트 저장)
 
 const socket = io('http://localhost:8080');
 // const socket = io('http://chattalk.uglysmith.co.kr:5000');
+
 /*
 * 소켓서버 연결
  */
 const handleSocketConnection = () => {
-<<<<<<< HEAD
-            // const socket = io('http://chattalk.uglysmith.co.kr:5000');
-=======
->>>>>>> c7d565e (feat 채팅방 초대 및 초대한 멤버 리스트 저장)
     const userId = prompt('아이디를 입력해주세요');
 
     if (userId) {
