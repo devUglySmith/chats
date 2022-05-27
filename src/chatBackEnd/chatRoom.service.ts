@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { chatRoomListDTO } from './dto/chatBackEnd.dto';
 import { Socket } from 'socket.io';
-import { v4 as uuidv4 } from 'uuid';
 import { InjectRepository } from "@nestjs/typeorm";
 import {In, Not, Repository} from "typeorm";
 import { MemberEntity } from "../entities/member.entity";
@@ -83,6 +82,19 @@ export class ChatRoomService {
 
     }
 
+    async getChatRoomList(client) {
+        //내가 속한 채팅방 가져오기
+        let chatNoArr = [];
+        const chatNo = await this.chatMemberRepository.find({select:["chatNo"],where:{mbNo:client.data.no}});
+
+        chatNo.forEach(data=>{
+            chatNoArr.push({'chatNo':data.chatNo,'chatDisplay':'Y','chatDelyn':'N'})
+        })
+
+        return await this.chatListRepository.find({select:["chatNo",'chatRoom'],where: chatNoArr})
+
+    }
+
     enterChatRoom(client: Socket, roomId: string) {
         client.data.roomId = roomId;
         client.rooms.clear();
@@ -112,8 +124,7 @@ export class ChatRoomService {
         return this.chatRoomList[roomId];
     }
 
-    getChatRoomList() {
-    }
+
 
     deleteChatRoom(roomId: string) {
         delete this.chatRoomList[roomId];

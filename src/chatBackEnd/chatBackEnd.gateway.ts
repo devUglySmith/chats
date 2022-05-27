@@ -23,15 +23,17 @@ export class ChatBackEndGateway
     server: Server;
 
     //소켓 연결시 유저목록에 추가
-    public handleConnection(client: Socket): void {
+    public handleConnection(client: Socket) {
         console.log('connected', client.id);
         client.leave(client.id);
         client.data.roomId = `room:lobby`;
         client.join('room:lobby');
+
+
     }
 
     //소켓 연결 해제시 유저목록에서 제거
-    public handleDisconnect(client: Socket): void {
+    public handleDisconnect(client: Socket) {
         const { roomId } = client.data;
         if (
             roomId != 'room:lobby' &&
@@ -40,7 +42,7 @@ export class ChatBackEndGateway
             this.ChatRoomService.deleteChatRoom(roomId);
             this.server.emit(
                 'getChatRoomList',
-                this.ChatRoomService.getChatRoomList(),
+                this.ChatRoomService.getChatRoomList(client),
             );
         }
         console.log('disonnected', client.id);
@@ -48,7 +50,7 @@ export class ChatBackEndGateway
 
     //메시지가 전송되면 모든 유저에게 메시지 전송
     @SubscribeMessage('sendMessage')
-    sendMessage(client: Socket, message: string): void {
+    sendMessage(client: Socket, message: string) {
         client.rooms.forEach((roomId) =>
             client.to(roomId).emit('getMessage', {
                 id: client.data.id,
@@ -67,7 +69,7 @@ export class ChatBackEndGateway
         }
 
         const user = await this.ChatRoomService.getMemberList(data.userId);
-        console.log(user);
+        // console.log(user);
 
         if(!user) return false;
 
@@ -76,40 +78,27 @@ export class ChatBackEndGateway
         client.data.nickname = user.mbName
         client.data.isInit = true;
 
+        const roomList = await this.ChatRoomService.getChatRoomList(client);
+        // console.log(roomList);
+
         return {
             name: user.mbName,
             id:user.mbId,
-            room: {
-                roomId: 'room:lobby',
-                roomName: '로비',
-            },
+            room: roomList,
         };
-    }
-
-    //닉네임 변경
-    @SubscribeMessage('setNickname')
-    setNickname(client: Socket, nickname: string): void {
-        const { roomId } = client.data;
-        client.to(roomId).emit('getMessage', {
-            id: null,
-            nickname: '안내',
-            message: `"${client.data.nickname}"님이 "${nickname}"으로 닉네임을 변경하셨습니다.`,
-        });
-        client.data.nickname = nickname;
     }
 
     //채팅방 목록 가져오기
     @SubscribeMessage('getChatRoomList')
-    getChatRoomList(client: Socket, payload: any) {
-        client.emit('getChatRoomList', this.ChatRoomService.getChatRoomList());
+    async getChatRoomList(client: Socket, payload: any) {
+        client.emit('getChatRoomList', await this.ChatRoomService.getChatRoomList(client));
     }
 
     //채팅방 생성하기
     @SubscribeMessage('createChatRoom')
-    createChatRoom(client: Socket, userList) {
-        //이전 방이 만약 나 혼자있던 방이면 제거
-        console.log(userList);
-        this.ChatRoomService.createChatRoom(client, {userList})
+     async createChatRoom(client: Socket, userList) {
+        await this.ChatRoomService.createChatRoom(client, {userList})
+
 
     }
 

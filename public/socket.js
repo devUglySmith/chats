@@ -35,17 +35,19 @@ const handleSocketConnection = () => {
             try {
                 console.log('connected')
                 socket.emit('setInit', {userId}, response => {
+                    console.log(response);
                         if (response){
                             chatUserInfo.nickname = response.name;
                             chatUserInfo.id = response.id;
                             chatUserInfo.room = response.room;
+                            handleSocketGetRoomList();
                         }else{
                             alert('아이디를 확인해주세요.');
                             location.reload();
                         }
                     }
                 );
-                socket.emit('getChatRoomList', null);
+
 
             } catch (e) {
                 console.log(e)
@@ -113,19 +115,18 @@ const handleSocketGetMessage = () => {
  * 참여하고 있는 채팅방 리스트 가져오기
  * */
 const handleSocketGetRoomList = () => {
-    socket.on('getChatRoomList', function (response) {
         let html = '';
-        // for (const {roomId, roomName} of Object.values(response)) {
-        //     html += '<div class="chat_list ' + (chatUserInfo.room.roomId === roomId ? 'active_chat' : 'enterChatRoom') + '" data-roomId="' + roomId + '">';
-        //     html += '<div class="chat_people">';
-        //     html += '<div class="chat_ib">';
-        //     html += '<h5>' + roomName + '</h5>';
-        //     html += '</div>';
-        //     html += '</div>';
-        //     html += '</div>';
-        // }
-        // chatRoomList.innerHTML += html;
-    });
+        console.log(chatUserInfo.room);
+        for (const {chatNo, chatRoom} of Object.values(chatUserInfo.room)) {
+            html += '<div class="chat_list ' + (chatUserInfo.room.chatNo === chatNo ? 'active_chat' : 'enterChatRoom') + '" data-roomId="' + chatNo + '">';
+            html += '<div class="chat_people">';
+            html += '<div class="chat_ib">';
+            html += '<h5>' + chatRoom + '</h5>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+        }
+        chatRoomList.innerHTML += html;
 }
 
 /*
@@ -150,7 +151,6 @@ const handleSocketJoinRoom = () => {
     socket.emit('enterChatRoom', thisRoomId, (res) => {
         if (!res) return;
         chatUserInfo.room = res;
-        // $('.roomName').text(chatUserInfo.room.roomName);
         chatDisplay.innerHTML = '';
     });
     socket.emit('getChatRoomList', null);
@@ -160,7 +160,6 @@ const handleSocketEvent = () => {
 
     handleSocketConnection();
     handleSocketGetMessage();
-    handleSocketGetRoomList();
 
     handleSocketSendMessage();
 
