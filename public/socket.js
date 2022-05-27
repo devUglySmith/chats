@@ -19,6 +19,7 @@ let chatUserInfo = {
 }
 
 let members;
+let chatList;
 const userList = [];
 
 const socket = io('http://localhost:8080');
@@ -126,14 +127,20 @@ const handleSocketGetRoomList = () => {
             html += '</div>';
             html += '</div>';
         }
-        chatRoomList.innerHTML += html;
+        chatRoomList.innerHTML += html
+
+        chatList = document.querySelectorAll('.enterChatRoom');
+
+    chatList.forEach(room=>{
+        room.addEventListener('click', handleSocketJoinRoom);
+    })
+
 }
 
 /*
  * 채팅방 초대 (방 생성)
  */
 const handleSocketInviteRoom = () => {
-    chatDisplay.innerHTML = '';
     socket.emit('createChatRoom', userList, (res) => {
         if (!res) return;
         chatUserInfo.room = res;
@@ -146,8 +153,8 @@ const handleSocketInviteRoom = () => {
 /*
  * 채팅방 입장
  */
-const handleSocketJoinRoom = () => {
-    const thisRoomId = $(this).attr('data-roomId');
+const handleSocketJoinRoom = (e) => {
+    const thisRoomId =e.currentTarget.getAttribute('data-roomId');
     socket.emit('enterChatRoom', thisRoomId, (res) => {
         if (!res) return;
         chatUserInfo.room = res;
