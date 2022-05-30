@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { ChatListEntity } from "./chatList.entity";
+import {MemberEntity} from "./member.entity";
 
 @Index("FK_aaaa__chat_list_TO_aaaa__chat_files_1", ["chatNo"], {})
 @Entity("aaaa__chat_files", { schema: "chattalk" })
@@ -66,4 +67,14 @@ export class ChatFilesEntity {
   })
   @JoinColumn([{ name: "chat_no", referencedColumnName: "chatNo" }])
   chatNo2: ChatListEntity;
+
+  @Column("int", { name: "mb_no", comment: "????__member ID" })
+  mbNo: number;
+
+  @ManyToOne(() => MemberEntity, (aaaaMember) => aaaaMember.aaaaChatFiles, {
+    onDelete: "RESTRICT",
+    onUpdate: "RESTRICT",
+  })
+  @JoinColumn([{ name: "mb_no", referencedColumnName: "mbNo" }])
+  mbNo2: MemberEntity;
 }

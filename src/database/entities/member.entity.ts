@@ -1,6 +1,7 @@
 import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import { ChatMemberEntity } from "./chatMember.entity";
 import { ChatMessageEntity } from "./chatMessage.entity";
+import {ChatFilesEntity} from "./chatFiles.entity";
 
 @Entity("aaaa__member", { schema: "chattalk" })
 export class MemberEntity {
@@ -142,4 +143,7 @@ export class MemberEntity {
 
   @OneToMany(() => ChatMessageEntity, (aaaaChatMessage) => aaaaChatMessage.mbNo2)
   aaaaChatMessages: ChatMessageEntity[];
+
+  @OneToMany(() => ChatFilesEntity, (aaaaChatFiles) => aaaaChatFiles.mbNo2)
+  aaaaChatFiles: ChatFilesEntity[];
 }
