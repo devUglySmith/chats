@@ -175,7 +175,8 @@ img {
     border-top: 1px solid #c4c4c4;
     position: relative;
 }
-.msg_send_btn {
+.msg_send_btn,
+.msg_upload_btn{
     background: #05728f none repeat scroll 0 0;
     border: medium none;
     border-radius: 50%;
@@ -188,6 +189,15 @@ img {
     top: 11px;
     width: 33px;
 }
+
+label.msg_upload_btn{
+    right: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .chatroom_btn_place {
     position: relative;
 }

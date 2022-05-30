@@ -32,6 +32,8 @@
                         <div class="type_msg">
                             <div class="input_msg_write">
                                 <input type="text" id="writeBox" class="write_msg" placeholder="Type a message" />
+                                <label for="uploadButton" class="msg_upload_btn"><i class="fa fa-upload" aria-hidden="true"></i></label>
+                                <input type="file" id="uploadButton" class="sendMessage" name="fileUpload[]" style="display:none" multiple>
                                 <button id="sendButton" class="msg_send_btn sendMessage" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
                             </div>
                         </div>
@@ -59,6 +61,7 @@
         </article>
         <script src="/socket.js"></script>
         <script src="/utils.js"></script>
+        <script src="/upload.js"></script>
 <!--        <script src="/chats/socket.js"></script>-->
 <!--        <script src="/chats/utils.js"></script>-->
     </body>
