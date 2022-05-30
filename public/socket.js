@@ -6,8 +6,6 @@ const chatDisplay = document.querySelector("#chatDisplay");
 const chatRoomList = document.querySelector("#chatRoomList");
 const sendButton = document.querySelector("#sendButton");
 const writeBox = document.querySelector("#writeBox");
-const userHiddenId = document.querySelector("input[name='userId']");
-const userHiddenNo = document.querySelector("input[name='userNo']");
 
 const ul = document.querySelector("#userListWrapper");
 
@@ -48,9 +46,6 @@ const handleSocketConnection = () => {
             chatUserInfo.id = response.id;
             chatUserInfo.room = response.room;
             chatUserInfo.no = response.no;
-
-            userHiddenId.setAttribute("value", response.id);
-            userHiddenNo.setAttribute("value", response.no);
 
             // 내가 속한 모든 방 가져오기
             handleSocketGetRoomList();

@@ -17,7 +17,11 @@ import { MulterModule } from "@nestjs/platform-express";
       ChatMemberEntity,
       ChatMessageEntity,
     ]),
-    MulterModule.register({ dest: "./uploads" }),
+    MulterModule.registerAsync({
+      useFactory: () => ({
+        dest: "./upload",
+      }),
+    }),
   ],
   providers: [ChatBackEndGateway, ChatRoomService],
   controllers: [ChatBackEndController],

@@ -4,6 +4,11 @@ const fileButton = document.querySelector("#uploadButton");
 let formData = new FormData();
 
 const filesUpload = function (e) {
+  // 방 먼저 입장했는지 체크
+  if (!chatUserInfo.room.roomId) {
+    alert("방에 입장해주세요.");
+    return false;
+  }
   // 클라이언트단에서 업로드 개수 제한
   if (this.files.length > MAX_UPLOAD_FILE) {
     alert(`업로드 개수는 ${MAX_UPLOAD_FILE} 개까지 입니다.`);
@@ -11,8 +16,9 @@ const filesUpload = function (e) {
   }
 
   // 업로드 한 사람 데이터베이스에 등록하기 위해 formData 에 추가
-  formData.append(`client`, userHiddenId.value);
-  formData.append(`client`, userHiddenNo.value);
+  formData.append(`client`, chatUserInfo.id);
+  formData.append(`client`, chatUserInfo.no);
+  formData.append(`client`, chatUserInfo.room.roomId);
 
   for (let i = 0; i < this.files.length; i++) {
     formData.append(`files`, this.files[i]);
