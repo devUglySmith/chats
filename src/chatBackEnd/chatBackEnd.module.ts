@@ -8,6 +8,7 @@ import { ChatMemberEntity } from "../database/entities/chatMember.entity";
 import { ChatMessageEntity } from "../database/entities/chatMessage.entity";
 import { ChatBackEndController } from "./chatBackEnd.controller";
 import { MulterModule } from "@nestjs/platform-express";
+import { ChatFilesEntity } from "../database/entities/chatFiles.entity";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MulterModule } from "@nestjs/platform-express";
       ChatListEntity,
       ChatMemberEntity,
       ChatMessageEntity,
+      ChatFilesEntity
     ]),
     MulterModule.registerAsync({
       useFactory: () => ({

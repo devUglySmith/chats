@@ -12,12 +12,24 @@ const drawMessage = (chatUserInfo, res)=>{
     res.forEach(data=>{
         const now = new Date(data.messageDate);
         const date = now.toLocaleString();
+        const format = "\\.(bmp|gif|jpg|jpeg|png)$";
         // 내 메세지
+
+
 
         if (chatUserInfo.id === data.id) {
             html += '<div class="outgoing_msg">';
             html += '<div class="sent_msg">';
-            html += '<p>' + data.message + '</p>';
+            if(data.file){
+
+                if (new RegExp(format).test(data.message)) {
+                    html += `<p><img src='/media/files/${data.message}' alt="${data.message}"></p>`;
+                }else{
+                    html += `<p><a href='/media/files/${data.message}' download>${data.message}</a></p>`;
+                }
+            }else{
+                html += '<p>' + data.message + '</p>';
+            }
             html += '<span class="time_date"> ' + data.nickname + '    | ' +date+'</span>';
             html += '</div>';
             html += '</div>';
@@ -26,7 +38,15 @@ const drawMessage = (chatUserInfo, res)=>{
             html += '<div class="incoming_msg">';
             html += '<div class="received_msg">';
             html += '<div class="received_withd_msg">';
-            html += '<p>' + data.message + '</p>';
+            if(data.file){
+                if (new RegExp(format).test(data.message)) {
+                    html += `<p><img src='/media/files/${data.message}' alt="${data.message}"></p>`;
+                }else{
+                    html += `<p><a href='/media/files/${data.message}' download>${data.message}</a></p>`;
+                }
+            }else{
+                html += '<p>' + data.message + '</p>';
+            }
             html += '<span class="time_date"> ' + data.nickname + '    | '+date +'</span>';
             html += '</div>';
             html += '</div>';

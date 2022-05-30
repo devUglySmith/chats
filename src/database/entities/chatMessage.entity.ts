@@ -44,6 +44,12 @@ export class ChatMessageEntity {
   @Column("int", { name: "mb_no", comment: "메세지보낸사람" })
   mbNo: number;
 
+  @Column({
+    name: 'cm_type',
+    default: 1
+  })
+  cmType: number;
+
   @ManyToOne(
     () => ChatListEntity,
     (aaaaChatList) => aaaaChatList.aaaaChatMessages,

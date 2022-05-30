@@ -58,6 +58,12 @@ export class ChatFilesEntity {
   })
   cfRegdate: Date | null;
 
+  @Column({
+    name: 'cf_type',
+    default: 1
+  })
+  cfType: number;
+
   @Column("int", { name: "chat_no", comment: "????__chat_list ID" })
   chatNo: number;
 

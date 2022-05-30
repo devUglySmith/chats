@@ -2,11 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { chatRoomListDTO } from "./dto/chatBackEnd.dto";
 import { Socket } from "socket.io";
 import { InjectRepository } from "@nestjs/typeorm";
-import { getRepository, In, Not, Repository } from "typeorm";
+import { getManager, getRepository, In, Not, Repository } from "typeorm";
 import { MemberEntity } from "../database/entities/member.entity";
 import { ChatListEntity } from "../database/entities/chatList.entity";
 import { ChatMemberEntity } from "../database/entities/chatMember.entity";
 import { ChatMessageEntity } from "../database/entities/chatMessage.entity";
+import { ChatFilesEntity } from "../database/entities/chatFiles.entity";
 
 @Injectable()
 export class ChatRoomService {
@@ -19,7 +20,9 @@ export class ChatRoomService {
     @InjectRepository(ChatMemberEntity)
     private chatMemberRepository: Repository<ChatMemberEntity>,
     @InjectRepository(ChatMessageEntity)
-    private chatMessageRepository: Repository<ChatMessageEntity>
+    private chatMessageRepository: Repository<ChatMessageEntity>,
+    @InjectRepository(ChatFilesEntity)
+    protected chatFileRepository:Repository<ChatFilesEntity>
   ) {
     this.chatRoomList = {
       "room:lobby": {
@@ -120,20 +123,37 @@ export class ChatRoomService {
     client.data.roomId = roomId;
     client.rooms.clear();
     client.join(roomId);
+    const entityManager = getManager();
 
     // [SELECT] => 채팅 기록, 유저 정보 가져오기
-    return await getRepository(ChatMessageEntity)
+    const message = getRepository(ChatMessageEntity)
       .createQueryBuilder("chat")
-      .where("chat.chatNo=:roomId", { roomId: roomId })
-      .andWhere("chat.cmDelyn=:cmDelYn", { cmDelYn: "N" })
+      .where(`chat.chatNo=${roomId}`)
+      .andWhere("chat.cmDelyn='N'")
       .select([
         "chat.cmContent AS message",
         "chat.cmRegdate AS messageDate",
         "member.mbId AS id",
         "member.mbName AS nickname",
+        "chat.cmType AS file"
       ])
       .leftJoin("chat.mbNo2", "member")
-      .getRawMany();
+      .getQuery();
+
+    const file = getRepository(ChatFilesEntity)
+      .createQueryBuilder("file")
+      .where(`file.chatNo=${roomId}`)
+      .select([
+        "file.cfFile AS message",
+        "file.cfRegdate AS messageDate",
+        "member.mbId AS id",
+        "member.mbName AS nickname",
+        "file.cfType AS file"
+      ])
+      .leftJoin("file.mbNo2", "member")
+      .getQuery();
+
+    return await entityManager.query(`${ message } UNION ${ file }`);
   }
 
   exitChatRoom(client: Socket, roomId: string) {
@@ -166,11 +186,18 @@ export class ChatRoomService {
         nickname: client.data.nickname,
         message: sendInfo.message,
         messageDate: chatMessage.cmRegdate,
+        file:false
       },
     ]);
   }
 
-  async createUploadFiles() {
+  async createUploadFiles(files,userData) {
+    console.log(userData);
+    const fileArr = []
+    files.forEach(data=>{
+      fileArr.push({cfFile:data.filename,cfFileOri:data.originalname,cfFileExt:data.mimetype,cfSize:data.size,chatNo:userData[3],mbNo:userData[1]})
+    })
+    return await this.chatFileRepository.save(fileArr);
 
   }
 
