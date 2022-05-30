@@ -7,6 +7,7 @@ import { ChatListEntity } from "../database/entities/chatList.entity";
 import { ChatMemberEntity } from "../database/entities/chatMember.entity";
 import { ChatMessageEntity } from "../database/entities/chatMessage.entity";
 import { ChatBackEndController } from "./chatBackEnd.controller";
+import { MulterModule } from "@nestjs/platform-express";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ChatBackEndController } from "./chatBackEnd.controller";
       ChatMemberEntity,
       ChatMessageEntity,
     ]),
+    MulterModule.register({ dest: "./uploads" }),
   ],
   providers: [ChatBackEndGateway, ChatRoomService],
   controllers: [ChatBackEndController],

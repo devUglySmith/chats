@@ -1,6 +1,6 @@
 import { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer-options.interface";
 import multer from "multer";
-import path from "path";
+import * as path from "path";
 import * as fs from "fs";
 
 const createFolder = (folder: string) => {

@@ -5,18 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8376498e-9455-4c69-a485-30fd5cf76e40" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/public/upload.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/socket.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/socket.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/upload.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/chatBackEnd/chatBackEnd.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/chatBackEnd/chatBackEnd.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/chatBackEnd/chatBackEnd.gateway.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/chatBackEnd/chatBackEnd.gateway.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/chatBackEnd/chatBackEnd.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/chatBackEnd/chatBackEnd.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/chatBackEnd/chatRoom.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/chatBackEnd/chatRoom.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/chatFiles.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/entities/chatFiles.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/chatList.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/entities/chatList.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/chatMember.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/entities/chatMember.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/chatMessage.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/entities/chatMessage.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/member.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/entities/member.entity.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/common/utils/multer.options.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/common/utils/multer.options.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/views/index.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/views/index.ejs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -100,7 +96,7 @@
       <workItem from="1653518892446" duration="28042000" />
       <workItem from="1653611871176" duration="16074000" />
       <workItem from="1653635462166" duration="7170000" />
-      <workItem from="1653874100775" duration="8847000" />
+      <workItem from="1653874100775" duration="13056000" />
     </task>
     <servers />
   </component>

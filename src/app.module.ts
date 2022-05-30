@@ -7,7 +7,6 @@ import { DatabaseService } from "./database/database.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import * as Joi from "joi";
 import { Connection } from "typeorm";
-import { MulterModule } from "@nestjs/platform-express";
 
 @Module({
   imports: [
@@ -27,11 +26,6 @@ import { MulterModule } from "@nestjs/platform-express";
     TypeOrmModule.forRoot(
       new DatabaseService(new ConfigService()).getTypeOrmConfig()
     ),
-    MulterModule.registerAsync({
-      useFactory: () => ({
-        dest: "./upload",
-      }),
-    }),
   ],
 })
 export class AppModule {
