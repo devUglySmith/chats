@@ -170,6 +170,10 @@ export class ChatRoomService {
     ]);
   }
 
+  async createUploadFiles() {
+
+  }
+
   deleteChatRoom(roomId: string) {
     delete this.chatRoomList[roomId];
   }

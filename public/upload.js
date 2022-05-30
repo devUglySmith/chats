@@ -1,9 +1,12 @@
 const MAX_UPLOAD_FILE = 3;
-const REQUEST_URL = "http://192.168.0.37:3000/upload";
+// const REQUEST_URL = "http://192.168.0.37:3000/upload";
+const REQUEST_URL = "http://localhost:3000/upload";
 const fileButton = document.querySelector("#uploadButton");
-let formData = new FormData();
 
-const filesUpload = function (e) {
+
+const filesUpload = function () {
+  let formData = new FormData();
+
   // 방 먼저 입장했는지 체크
   if (!chatUserInfo.room.roomId) {
     alert("방에 입장해주세요.");
@@ -34,7 +37,6 @@ const filesUpload = function (e) {
     .then((response) => response)
     .then((result) => {
       console.log(result);
-      formData = new FormData();
     })
     .catch((error) => alert(error));
 };
