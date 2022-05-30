@@ -151,6 +151,7 @@ export class ChatRoomService {
         "file.cfType AS file"
       ])
       .leftJoin("file.mbNo2", "member")
+      .orderBy("messageDate")
       .getQuery();
 
     return await entityManager.query(`${ message } UNION ${ file }`);

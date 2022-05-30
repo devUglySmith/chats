@@ -1,7 +1,7 @@
 const MAX_UPLOAD_FILE = 3;
 // const REQUEST_URL = "http://192.168.0.37:3000/upload";
-// const REQUEST_URL = "http://localhost:3000/upload";
-const REQUEST_URL = "http://192.168.0.92:3000/upload";
+const REQUEST_URL = "http://localhost:3000/upload";
+// const REQUEST_URL = "http://192.168.0.92:3000/upload";
 const fileButton = document.querySelector("#uploadButton");
 
 

@@ -24,8 +24,8 @@ let members;
 let chatList;
 let userList = [];
 
-// const socket = io('http://localhost:8080');
-const socket = io('http://192.168.0.92:8080');
+const socket = io('http://localhost:8080');
+// const socket = io('http://192.168.0.92:8080');
 // const socket = io("http://192.168.0.37:8080");
 // const socket = io('http://chattalk.uglysmith.co.kr:8080');
 
