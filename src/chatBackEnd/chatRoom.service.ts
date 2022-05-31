@@ -106,6 +106,10 @@ export class ChatRoomService {
       where: { mbNo: clientNo },
     });
 
+    if(!chatNo.length){
+      return false;
+    }
+
     chatNo.forEach((data) => {
       // 채팅방 정보 가져오기 위한 배열 생성
       chatNoArr.push({ chatNo: data.chatNo, chatDisplay: "Y", chatDelyn: "N" });

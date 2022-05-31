@@ -13,6 +13,7 @@ import { setInitDTO } from "./dto/chatBackEnd.dto";
   cors: {
     // origin: 'http://chattalk.uglysmith.co.kr',
     credentials: true,
+    allowEI03:true
   },
 })
 export class ChatBackEndGateway

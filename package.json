@@ -30,6 +30,8 @@
     "@nestjs/typeorm": "^8.0.4",
     "@nestjs/websockets": "^8.0.3",
     "@types/ws": "^7.4.6",
+    "artillery": "^2.0.0-17",
+    "artillery-engine-socketio-v3": "^1.1.2",
     "axios": "^0.27.2",
     "joi": "^17.6.0",
     "mo": "^1.7.3",
