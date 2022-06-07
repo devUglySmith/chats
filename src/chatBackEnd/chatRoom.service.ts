@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { Socket } from "socket.io";
-import { InjectRepository } from "@nestjs/typeorm";
-import { EntityManager, getManager, getRepository, Repository } from "typeorm";
+import { EntityManager, getManager } from "typeorm";
 import { ChatMemberEntity } from "../repositories/entities/chatMember.entity";
 import { ChatMessageEntity } from "../repositories/entities/chatMessage.entity";
-import { ChatFilesEntity } from "../repositories/entities/chatFiles.entity";
 import { MemberRepository } from "../repositories/member.repository";
 import { ChatListRepository } from "../repositories/chatList.repository";
 import { MemberEntity } from "../repositories/entities/member.entity";
 import { ChatListEntity } from "../repositories/entities/chatList.entity";
 import { ChatMemberRepository } from "../repositories/chatMember.repository";
+import { ChatMessageRepository } from "../repositories/chatMessage.repository";
+import { ChatFileRepository } from "../repositories/chatFile.repository";
 
 @Injectable()
 export class ChatRoomService {
@@ -17,10 +17,8 @@ export class ChatRoomService {
     private readonly memberRepository: MemberRepository,
     private readonly chatMemberRepository: ChatMemberRepository,
     private readonly chatListRepository: ChatListRepository,
-    @InjectRepository(ChatMessageEntity)
-    private chatMessageRepository: Repository<ChatMessageEntity>,
-    @InjectRepository(ChatFilesEntity)
-    protected chatFileRepository: Repository<ChatFilesEntity>
+    private readonly chatMessageRepository: ChatMessageRepository,
+    private readonly chatFileRepository: ChatFileRepository
   ) {}
 
   async getMemberList(user: string) {
@@ -32,7 +30,6 @@ export class ChatRoomService {
   }
 
   async createChatRoom(client, { userList }) {
-    // 나를 포함한 초대된 유저들
     userList.push(client.data.no);
 
     let roomName: string;
@@ -53,26 +50,21 @@ export class ChatRoomService {
       chatRoom: roomName,
     });
 
-    // 채팅방 속한 멤버 배열
     for (const data of userData) {
       chatListArr.push({ chatNo: chatList.chatNo, mbNo: data.mbNo });
     }
 
     await this.chatMemberRepository.inertRow(chatListArr);
 
-    // 실시간으로 채팅방 리스트를 초대된 유저와 나에게 전달
     for (const data of userData) {
       const members = await this.getChatRoomList(data.mbNo);
 
-      // setInit에서 join한 유저들 중 초대된 사람에게 전달
       client.to(data.mbNo).emit("getNewChatList", members);
     }
   }
 
-  //내가 속한 채팅방 가져오기
   async getChatRoomList(clientId) {
     const chatNoArr: Array<object> = [];
-    // [SELECT] => 내가 속한 채팅방 번호 가져오기
     const chatNo: ChatMemberEntity[] =
       await this.chatMemberRepository.getAllJoinRoomNumberRow(clientId);
 
@@ -81,49 +73,20 @@ export class ChatRoomService {
     }
 
     chatNo.forEach((data) => {
-      // 채팅방 정보 가져오기 위한 배열 생성
       chatNoArr.push({ chatNo: data.chatNo, chatDisplay: "Y", chatDelyn: "N" });
     });
 
-    // [SELECT] => 채팅방 가져오기
     return await this.chatListRepository.getChatListRow(chatNoArr);
   }
 
-  // 채팅방 입장
   async enterChatRoom(client: Socket, roomId) {
     client.data.roomId = roomId;
     client.rooms.clear();
     client.join(roomId);
     const entityManager: EntityManager = getManager();
 
-    // [SELECT] => 채팅 기록, 유저 정보 가져오기
-    const message: string = getRepository(ChatMessageEntity)
-      .createQueryBuilder("chat")
-      .where(`chat.chatNo=${roomId}`)
-      .andWhere("chat.cmDelyn='N'")
-      .select([
-        "chat.cmContent AS message",
-        "chat.cmRegdate AS messageDate",
-        "member.mbId AS id",
-        "member.mbName AS nickname",
-        "chat.cmType AS file",
-      ])
-      .leftJoin("chat.mbNo2", "member")
-      .getQuery();
-
-    const file: string = getRepository(ChatFilesEntity)
-      .createQueryBuilder("file")
-      .where(`file.chatNo=${roomId}`)
-      .select([
-        "file.cfFile AS message",
-        "file.cfRegdate AS messageDate",
-        "member.mbId AS id",
-        "member.mbName AS nickname",
-        "file.cfType AS file",
-      ])
-      .leftJoin("file.mbNo2", "member")
-      .orderBy("messageDate")
-      .getQuery();
+    const message: string = await this.chatMessageRepository.joinRow(roomId);
+    const file: string = await this.chatFileRepository.joinRow(roomId);
 
     return await entityManager.query(`${message} UNION ${file}`);
   }
@@ -140,19 +103,16 @@ export class ChatRoomService {
     });
   }
 
-  //내가 속한 방에 메세지 생성 및 전달
   // sendInfo : 방 No, 메세지
   async createChatMessage(client, sendInfo) {
-    const chatData: object = {
+    const chatData = {
       cmContent: sendInfo.message,
       chatNo: sendInfo.chatNo,
       mbNo: client.data.no,
     };
-    // [INSERT] => 채팅 저장
     const chatMessage: ChatMessageEntity =
-      await this.chatMessageRepository.save(chatData);
+      await this.chatMessageRepository.insertRow(chatData);
 
-    //해당 방에 속한 모든 유저에게 메세지 전달
     client.to(sendInfo.chatNo).emit("getMessage", [
       {
         id: client.data.id,
@@ -177,7 +137,7 @@ export class ChatRoomService {
         mbNo: userData[1],
       });
     });
-    return await this.chatFileRepository.save(fileArr);
+    return await this.chatFileRepository.insertRow(fileArr);
   }
 
   deleteChatRoom(roomId: string) {}
