@@ -7,12 +7,12 @@ import { ChatListEntity } from "../repositories/entities/chatList.entity";
 import { ChatMemberEntity } from "../repositories/entities/chatMember.entity";
 import { ChatMessageEntity } from "../repositories/entities/chatMessage.entity";
 import { ChatFilesEntity } from "../repositories/entities/chatFiles.entity";
+import { MemberRepository } from "../repositories/member.repository";
 
 @Injectable()
 export class ChatRoomService {
   constructor(
-    @InjectRepository(MemberEntity)
-    private memberRepository: Repository<MemberEntity>,
+    private readonly memberRepository: MemberRepository,
     @InjectRepository(ChatListEntity)
     private chatListRepository: Repository<ChatListEntity>,
     @InjectRepository(ChatMemberEntity)
@@ -23,16 +23,12 @@ export class ChatRoomService {
     protected chatFileRepository: Repository<ChatFilesEntity>
   ) {}
 
-  // 유저 정보 가져오기
   async getMemberList(user: string) {
-    // [SELECT] => 유저 정보 가져오기
-    return await this.memberRepository.findOne({ where: { mbId: user } });
+    return await this.memberRepository.getOneRow(user);
   }
 
-  // 나를 제외한 모든 유저 정보 가져오기
   async getAllMemberList(id: number) {
-    // [SELECT] => 나를 제외한 모든 유저 정보 가져오기
-    return await this.memberRepository.find({
+    return await this.memberRepository.getAllRow({
       select: ["mbNo", "mbId", "mbName"],
       where: {
         mbId: Not(id),
@@ -49,8 +45,7 @@ export class ChatRoomService {
     const userNameArr = [];
     const chatListArr = [];
 
-    // [SELECT] => 초대를 한 유저리스트 불러오기
-    const userData = await this.memberRepository.find({
+    const userData = await this.memberRepository.getAllRow({
       select: ["mbNo", "mbName"],
       where: {
         mbNo: In(userList),

@@ -22,7 +22,6 @@ export class ChatBackEndGateway
   constructor(private readonly ChatRoomService: ChatRoomService) {}
   @WebSocketServer()
   server: Server;
-
   //소켓 연결시 유저목록에 추가
   public handleConnection(client: Socket) {
     console.log("connected", client.id);
