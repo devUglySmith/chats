@@ -1,18 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import { Socket } from "socket.io";
 import { InjectRepository } from "@nestjs/typeorm";
-import { getManager, getRepository, Repository } from "typeorm";
+import { EntityManager, getManager, getRepository, Repository } from "typeorm";
 import { ChatMemberEntity } from "../repositories/entities/chatMember.entity";
 import { ChatMessageEntity } from "../repositories/entities/chatMessage.entity";
 import { ChatFilesEntity } from "../repositories/entities/chatFiles.entity";
 import { MemberRepository } from "../repositories/member.repository";
 import { ChatListRepository } from "../repositories/chatList.repository";
+import { MemberEntity } from "../repositories/entities/member.entity";
+import { ChatListEntity } from "../repositories/entities/chatList.entity";
 
 @Injectable()
 export class ChatRoomService {
   constructor(
     private readonly memberRepository: MemberRepository,
-    private chatListRepository: ChatListRepository,
+    private readonly chatListRepository: ChatListRepository,
     @InjectRepository(ChatMemberEntity)
     private chatMemberRepository: Repository<ChatMemberEntity>,
     @InjectRepository(ChatMessageEntity)
@@ -29,27 +31,25 @@ export class ChatRoomService {
     return await this.memberRepository.getAllInviteUsersRow(clientId);
   }
 
-  // 채팅방 생성하기
   async createChatRoom(client, { userList }) {
     // 나를 포함한 초대된 유저들
     userList.push(client.data.no);
 
-    let roomName;
-    const userNameArr = [];
-    const chatListArr = [];
+    let roomName: string;
+    const userNameArr: Array<string> = [];
+    const chatListArr: Array<object> = [];
 
-    const userData = await this.memberRepository.getAllUsersRow(userList);
+    const userData: MemberEntity[] = await this.memberRepository.getAllUsersRow(
+      userList
+    );
 
-    // 채팅방 이름을 만들어주기 위한 배열 삽입
     userData.forEach((data) => {
       userNameArr.push(data.mbName);
     });
 
-    // 방 이름을 문자열로 만들기
     roomName = userNameArr.join();
 
-    // [INSERT] => 채팅방 생성
-    const chatList = await this.chatListRepository.insertRow({
+    const chatList: ChatListEntity = await this.chatListRepository.insertRow({
       chatRoom: roomName,
     });
 
@@ -72,9 +72,9 @@ export class ChatRoomService {
 
   //내가 속한 채팅방 가져오기
   async getChatRoomList(clientNo) {
-    let chatNoArr = [];
+    const chatNoArr: Array<object> = [];
     // [SELECT] => 내가 속한 채팅방 번호 가져오기
-    const chatNo = await this.chatMemberRepository.find({
+    const chatNo: ChatMemberEntity[] = await this.chatMemberRepository.find({
       select: ["chatNo"],
       where: { mbNo: clientNo },
     });
@@ -97,10 +97,10 @@ export class ChatRoomService {
     client.data.roomId = roomId;
     client.rooms.clear();
     client.join(roomId);
-    const entityManager = getManager();
+    const entityManager: EntityManager = getManager();
 
     // [SELECT] => 채팅 기록, 유저 정보 가져오기
-    const message = getRepository(ChatMessageEntity)
+    const message: string = getRepository(ChatMessageEntity)
       .createQueryBuilder("chat")
       .where(`chat.chatNo=${roomId}`)
       .andWhere("chat.cmDelyn='N'")
@@ -114,7 +114,7 @@ export class ChatRoomService {
       .leftJoin("chat.mbNo2", "member")
       .getQuery();
 
-    const file = getRepository(ChatFilesEntity)
+    const file: string = getRepository(ChatFilesEntity)
       .createQueryBuilder("file")
       .where(`file.chatNo=${roomId}`)
       .select([
@@ -146,13 +146,14 @@ export class ChatRoomService {
   //내가 속한 방에 메세지 생성 및 전달
   // sendInfo : 방 No, 메세지
   async createChatMessage(client, sendInfo) {
-    const chatData = {
+    const chatData: object = {
       cmContent: sendInfo.message,
       chatNo: sendInfo.chatNo,
       mbNo: client.data.no,
     };
     // [INSERT] => 채팅 저장
-    const chatMessage = await this.chatMessageRepository.save(chatData);
+    const chatMessage: ChatMessageEntity =
+      await this.chatMessageRepository.save(chatData);
 
     //해당 방에 속한 모든 유저에게 메세지 전달
     client.to(sendInfo.chatNo).emit("getMessage", [
