@@ -1,3 +1,3 @@
-// export class ChatMemberRepository{
-//     public
-// }
+export class ChatMemberRepository {
+  public async inertRow() {}
+}

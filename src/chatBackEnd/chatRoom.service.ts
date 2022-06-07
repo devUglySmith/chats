@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { Socket } from "socket.io";
 import { InjectRepository } from "@nestjs/typeorm";
 import { getManager, getRepository, In, Not, Repository } from "typeorm";
-import { MemberEntity } from "../repositories/entities/member.entity";
 import { ChatListEntity } from "../repositories/entities/chatList.entity";
 import { ChatMemberEntity } from "../repositories/entities/chatMember.entity";
 import { ChatMessageEntity } from "../repositories/entities/chatMessage.entity";
@@ -27,13 +26,8 @@ export class ChatRoomService {
     return await this.memberRepository.getOneRow(user);
   }
 
-  async getAllMemberList(id: number) {
-    return await this.memberRepository.getAllRow({
-      select: ["mbNo", "mbId", "mbName"],
-      where: {
-        mbId: Not(id),
-      },
-    });
+  async getAllMemberList(clientId: number) {
+    return await this.memberRepository.getAllInviteUsersRow(clientId);
   }
 
   // 채팅방 생성하기
@@ -45,12 +39,7 @@ export class ChatRoomService {
     const userNameArr = [];
     const chatListArr = [];
 
-    const userData = await this.memberRepository.getAllRow({
-      select: ["mbNo", "mbName"],
-      where: {
-        mbNo: In(userList),
-      },
-    });
+    const userData = await this.memberRepository.getAllUsersRow(userList);
 
     // 채팅방 이름을 만들어주기 위한 배열 삽입
     userData.forEach((data) => {
