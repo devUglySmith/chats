@@ -7,16 +7,25 @@ import { ChatMessageEntity } from "../repositories/entities/chatMessage.entity";
 import { ChatFilesEntity } from "../repositories/entities/chatFiles.entity";
 import { MemberRepository } from "../repositories/member.repository";
 import { ChatListRepository } from "../repositories/chatList.repository";
+<<<<<<< HEAD
 import { MemberEntity } from "../repositories/entities/member.entity";
 import { ChatListEntity } from "../repositories/entities/chatList.entity";
+=======
+import { ChatMemberRepository } from "../repositories/chatMember.repository";
+>>>>>>> 5f1db25 (update chatMemberRepository)
 
 @Injectable()
 export class ChatRoomService {
   constructor(
     private readonly memberRepository: MemberRepository,
+<<<<<<< HEAD
     private readonly chatListRepository: ChatListRepository,
     @InjectRepository(ChatMemberEntity)
     private chatMemberRepository: Repository<ChatMemberEntity>,
+=======
+    private readonly chatMemberRepository: ChatMemberRepository,
+    private chatListRepository: ChatListRepository,
+>>>>>>> 5f1db25 (update chatMemberRepository)
     @InjectRepository(ChatMessageEntity)
     private chatMessageRepository: Repository<ChatMessageEntity>,
     @InjectRepository(ChatFilesEntity)
@@ -58,8 +67,7 @@ export class ChatRoomService {
       chatListArr.push({ chatNo: chatList.chatNo, mbNo: data.mbNo });
     }
 
-    // [INSERT] => 채팅방에 속한 유저 저장
-    await this.chatMemberRepository.save(chatListArr);
+    await this.chatMemberRepository.inertRow(chatListArr);
 
     // 실시간으로 채팅방 리스트를 초대된 유저와 나에게 전달
     for (const data of userData) {
@@ -70,6 +78,7 @@ export class ChatRoomService {
     }
   }
 
+<<<<<<< HEAD
   //내가 속한 채팅방 가져오기
   async getChatRoomList(clientNo) {
     const chatNoArr: Array<object> = [];
@@ -78,6 +87,13 @@ export class ChatRoomService {
       select: ["chatNo"],
       where: { mbNo: clientNo },
     });
+=======
+  async getChatRoomList(clientId: number) {
+    let chatNoArr = [];
+    const chatNo = await this.chatMemberRepository.getAllJoinRoomNumberRow(
+      clientId
+    );
+>>>>>>> 5f1db25 (update chatMemberRepository)
 
     if (!chatNo.length) {
       return false;
