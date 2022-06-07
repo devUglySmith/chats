@@ -1,17 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { chatRoomListDTO } from "./dto/chatBackEnd.dto";
 import { Socket } from "socket.io";
 import { InjectRepository } from "@nestjs/typeorm";
 import { getManager, getRepository, In, Not, Repository } from "typeorm";
-import { MemberEntity } from "../database/entities/member.entity";
-import { ChatListEntity } from "../database/entities/chatList.entity";
-import { ChatMemberEntity } from "../database/entities/chatMember.entity";
-import { ChatMessageEntity } from "../database/entities/chatMessage.entity";
-import { ChatFilesEntity } from "../database/entities/chatFiles.entity";
+import { MemberEntity } from "../repositories/entities/member.entity";
+import { ChatListEntity } from "../repositories/entities/chatList.entity";
+import { ChatMemberEntity } from "../repositories/entities/chatMember.entity";
+import { ChatMessageEntity } from "../repositories/entities/chatMessage.entity";
+import { ChatFilesEntity } from "../repositories/entities/chatFiles.entity";
 
 @Injectable()
 export class ChatRoomService {
-  private readonly chatRoomList: Record<string, chatRoomListDTO>;
   constructor(
     @InjectRepository(MemberEntity)
     private memberRepository: Repository<MemberEntity>,
@@ -22,16 +20,8 @@ export class ChatRoomService {
     @InjectRepository(ChatMessageEntity)
     private chatMessageRepository: Repository<ChatMessageEntity>,
     @InjectRepository(ChatFilesEntity)
-    protected chatFileRepository:Repository<ChatFilesEntity>
-  ) {
-    this.chatRoomList = {
-      "room:lobby": {
-        roomId: "room:lobby",
-        roomName: "로비",
-        cheifId: null,
-      },
-    };
-  }
+    protected chatFileRepository: Repository<ChatFilesEntity>
+  ) {}
 
   // 유저 정보 가져오기
   async getMemberList(user: string) {
@@ -106,7 +96,7 @@ export class ChatRoomService {
       where: { mbNo: clientNo },
     });
 
-    if(!chatNo.length){
+    if (!chatNo.length) {
       return false;
     }
 
@@ -139,7 +129,7 @@ export class ChatRoomService {
         "chat.cmRegdate AS messageDate",
         "member.mbId AS id",
         "member.mbName AS nickname",
-        "chat.cmType AS file"
+        "chat.cmType AS file",
       ])
       .leftJoin("chat.mbNo2", "member")
       .getQuery();
@@ -152,13 +142,13 @@ export class ChatRoomService {
         "file.cfRegdate AS messageDate",
         "member.mbId AS id",
         "member.mbName AS nickname",
-        "file.cfType AS file"
+        "file.cfType AS file",
       ])
       .leftJoin("file.mbNo2", "member")
       .orderBy("messageDate")
       .getQuery();
 
-    return await entityManager.query(`${ message } UNION ${ file }`);
+    return await entityManager.query(`${message} UNION ${file}`);
   }
 
   exitChatRoom(client: Socket, roomId: string) {
@@ -191,22 +181,26 @@ export class ChatRoomService {
         nickname: client.data.nickname,
         message: sendInfo.message,
         messageDate: chatMessage.cmRegdate,
-        file:false
+        file: false,
       },
     ]);
   }
 
-  async createUploadFiles(files,userData) {
+  async createUploadFiles(files, userData) {
     console.log(userData);
-    const fileArr = []
-    files.forEach(data=>{
-      fileArr.push({cfFile:data.filename,cfFileOri:data.originalname,cfFileExt:data.mimetype,cfSize:data.size,chatNo:userData[3],mbNo:userData[1]})
-    })
+    const fileArr = [];
+    files.forEach((data) => {
+      fileArr.push({
+        cfFile: data.filename,
+        cfFileOri: data.originalname,
+        cfFileExt: data.mimetype,
+        cfSize: data.size,
+        chatNo: userData[3],
+        mbNo: userData[1],
+      });
+    });
     return await this.chatFileRepository.save(fileArr);
-
   }
 
-  deleteChatRoom(roomId: string) {
-    delete this.chatRoomList[roomId];
-  }
+  deleteChatRoom(roomId: string) {}
 }

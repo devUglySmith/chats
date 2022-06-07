@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 import { ChatBackEndModule } from "./chatBackEnd/chatBackEnd.module";
 import { ChatFrontEndModule } from "./chatFrontEnd/chatFrontEnd.module";
-import { DatabaseModule } from "./database/database.module";
+import { DatabaseModule } from "./providers/database/database.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DatabaseService } from "./database/database.service";
+import { DatabaseService } from "./providers/database/database.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import * as Joi from "joi";
 import { Connection } from "typeorm";
