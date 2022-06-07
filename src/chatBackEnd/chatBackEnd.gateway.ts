@@ -13,7 +13,7 @@ import { setInitDTO } from "./dto/chatBackEnd.dto";
   cors: {
     // origin: 'http://chattalk.uglysmith.co.kr',
     credentials: true,
-    allowEI03:true
+    allowEI03: true,
   },
 })
 export class ChatBackEndGateway
@@ -115,21 +115,5 @@ export class ChatBackEndGateway
   @SubscribeMessage("inviteUsers")
   selectInviteUser(client: Socket) {
     return this.ChatRoomService.getAllMemberList(client.data.id);
-  }
-
-  // 파일 정보 전달
-  @SubscribeMessage("sendFileData")
-  async sendFileInfo(client:Socket,fileData){
-    console.log(fileData);
-    console.log(client);
-    for(let data of fileData){
-      client.to(data.chatNo).emit('getMessage', {
-        id: client.data.id,
-        nickname: client.data.nickname,
-        message: data.cfFile,
-        messageDate: data.cfRegdate,
-        file:true
-      })
-    }
   }
 }

@@ -1,0 +1,31 @@
+# my-scenario.yml
+config:
+  socketio: ["websocket"]
+  target: "http://chattalk.uglysmith.co.kr:8080"
+  phases:
+    - duration: 200
+      arrivalRate: 10
+  payload:
+    path: "test_file.csv"
+    fields:
+      - "email"
+  engines:
+    socketio-v3: {}
+
+scenarios:
+  - name: My sample scenario
+    engine: socketio-v3
+    flow:
+      - emit:
+          channel: "setInit"
+          data:
+            "userId": "{{email}}"
+      - think: 1
+      - loop:
+        - emit:
+            channel: "sendMessage"
+            data:
+              "chatNo": "58"
+              "message": "test"
+        - think: 1
+        count: 10
