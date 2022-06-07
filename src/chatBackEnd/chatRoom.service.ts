@@ -7,25 +7,16 @@ import { ChatMessageEntity } from "../repositories/entities/chatMessage.entity";
 import { ChatFilesEntity } from "../repositories/entities/chatFiles.entity";
 import { MemberRepository } from "../repositories/member.repository";
 import { ChatListRepository } from "../repositories/chatList.repository";
-<<<<<<< HEAD
 import { MemberEntity } from "../repositories/entities/member.entity";
 import { ChatListEntity } from "../repositories/entities/chatList.entity";
-=======
 import { ChatMemberRepository } from "../repositories/chatMember.repository";
->>>>>>> 5f1db25 (update chatMemberRepository)
 
 @Injectable()
 export class ChatRoomService {
   constructor(
     private readonly memberRepository: MemberRepository,
-<<<<<<< HEAD
-    private readonly chatListRepository: ChatListRepository,
-    @InjectRepository(ChatMemberEntity)
-    private chatMemberRepository: Repository<ChatMemberEntity>,
-=======
     private readonly chatMemberRepository: ChatMemberRepository,
-    private chatListRepository: ChatListRepository,
->>>>>>> 5f1db25 (update chatMemberRepository)
+    private readonly chatListRepository: ChatListRepository,
     @InjectRepository(ChatMessageEntity)
     private chatMessageRepository: Repository<ChatMessageEntity>,
     @InjectRepository(ChatFilesEntity)
@@ -78,22 +69,12 @@ export class ChatRoomService {
     }
   }
 
-<<<<<<< HEAD
   //내가 속한 채팅방 가져오기
-  async getChatRoomList(clientNo) {
+  async getChatRoomList(clientId) {
     const chatNoArr: Array<object> = [];
     // [SELECT] => 내가 속한 채팅방 번호 가져오기
-    const chatNo: ChatMemberEntity[] = await this.chatMemberRepository.find({
-      select: ["chatNo"],
-      where: { mbNo: clientNo },
-    });
-=======
-  async getChatRoomList(clientId: number) {
-    let chatNoArr = [];
-    const chatNo = await this.chatMemberRepository.getAllJoinRoomNumberRow(
-      clientId
-    );
->>>>>>> 5f1db25 (update chatMemberRepository)
+    const chatNo: ChatMemberEntity[] =
+      await this.chatMemberRepository.getAllJoinRoomNumberRow(clientId);
 
     if (!chatNo.length) {
       return false;
