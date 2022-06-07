@@ -9,6 +9,7 @@ import { ChatBackEndController } from "./chatBackEnd.controller";
 import { MulterModule } from "@nestjs/platform-express";
 import { ChatFilesEntity } from "../repositories/entities/chatFiles.entity";
 import { MemberRepository } from "../repositories/member.repository";
+import { ChatListRepository } from "../repositories/chatList.repository";
 
 @Module({
   imports: [
@@ -24,7 +25,12 @@ import { MemberRepository } from "../repositories/member.repository";
       }),
     }),
   ],
-  providers: [ChatBackEndGateway, ChatRoomService, MemberRepository],
+  providers: [
+    ChatBackEndGateway,
+    ChatRoomService,
+    MemberRepository,
+    ChatListRepository,
+  ],
   controllers: [ChatBackEndController],
 })
 export class ChatBackEndModule {}

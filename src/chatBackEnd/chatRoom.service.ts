@@ -1,19 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { Socket } from "socket.io";
 import { InjectRepository } from "@nestjs/typeorm";
-import { getManager, getRepository, In, Not, Repository } from "typeorm";
-import { ChatListEntity } from "../repositories/entities/chatList.entity";
+import { getManager, getRepository, Repository } from "typeorm";
 import { ChatMemberEntity } from "../repositories/entities/chatMember.entity";
 import { ChatMessageEntity } from "../repositories/entities/chatMessage.entity";
 import { ChatFilesEntity } from "../repositories/entities/chatFiles.entity";
 import { MemberRepository } from "../repositories/member.repository";
+import { ChatListRepository } from "../repositories/chatList.repository";
 
 @Injectable()
 export class ChatRoomService {
   constructor(
     private readonly memberRepository: MemberRepository,
-    @InjectRepository(ChatListEntity)
-    private chatListRepository: Repository<ChatListEntity>,
+    private chatListRepository: ChatListRepository,
     @InjectRepository(ChatMemberEntity)
     private chatMemberRepository: Repository<ChatMemberEntity>,
     @InjectRepository(ChatMessageEntity)
@@ -50,7 +49,7 @@ export class ChatRoomService {
     roomName = userNameArr.join();
 
     // [INSERT] => 채팅방 생성
-    const chatList = await this.chatListRepository.save({
+    const chatList = await this.chatListRepository.insertRow({
       chatRoom: roomName,
     });
 
@@ -90,10 +89,7 @@ export class ChatRoomService {
     });
 
     // [SELECT] => 채팅방 가져오기
-    return await this.chatListRepository.find({
-      select: ["chatNo", "chatRoom"],
-      where: chatNoArr,
-    });
+    return await this.chatListRepository.getChatListRow(chatNoArr);
   }
 
   // 채팅방 입장
