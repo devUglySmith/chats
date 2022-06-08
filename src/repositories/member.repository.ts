@@ -1,4 +1,4 @@
-import { getRepository, In, Not } from "typeorm";
+import { getRepository, In } from "typeorm";
 import { MemberEntity } from "./entities/member.entity";
 
 export class MemberRepository {
@@ -6,16 +6,15 @@ export class MemberRepository {
     return await getRepository(MemberEntity).findOne({ where: { mbId: user } });
   }
 
-  public async getAllInviteUsersRow(clientId: number) {
-    return await getRepository(MemberEntity).find({
-      select: ["mbNo", "mbId", "mbName"],
-      where: {
-        mbId: Not(clientId),
-      },
-    });
+  public async getUsersRow(user: Array<number>) {
+    return await getRepository(MemberEntity)
+      .createQueryBuilder("member")
+      .select(["member.mbNo", "member.mbId", "member.mbName"])
+      .where(`member.mbNo NOT IN(:...user)`, { user: user })
+      .getMany();
   }
 
-  public async getAllUsersRow(userList: Array<string>) {
+  public async getInviteUsersRow(userList: Array<number>) {
     return await getRepository(MemberEntity).find({
       select: ["mbNo", "mbName"],
       where: {

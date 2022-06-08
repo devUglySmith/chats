@@ -1,4 +1,4 @@
-import { getRepository } from "typeorm";
+import { getRepository, Not } from "typeorm";
 import { ChatMemberEntity } from "./entities/chatMember.entity";
 
 export class ChatMemberRepository {
@@ -6,6 +6,13 @@ export class ChatMemberRepository {
     return await getRepository(ChatMemberEntity).find({
       select: ["chatNo"],
       where: { mbNo: clientId },
+    });
+  }
+
+  public async getUserRow(roomId, clientId) {
+    return await getRepository(ChatMemberEntity).find({
+      select: ["mbNo"],
+      where: { chatNo: roomId, mbNo: Not(clientId) },
     });
   }
 

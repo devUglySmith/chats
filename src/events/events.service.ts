@@ -5,7 +5,6 @@ import { ChatMemberEntity } from "../repositories/entities/chatMember.entity";
 import { ChatMessageEntity } from "../repositories/entities/chatMessage.entity";
 import { MemberRepository } from "../repositories/member.repository";
 import { ChatListRepository } from "../repositories/chatList.repository";
-import { MemberEntity } from "../repositories/entities/member.entity";
 import { ChatListEntity } from "../repositories/entities/chatList.entity";
 import { ChatMemberRepository } from "../repositories/chatMember.repository";
 import { ChatMessageRepository } from "../repositories/chatMessage.repository";
@@ -21,44 +20,55 @@ export class EventsService {
     private readonly chatFileRepository: ChatFileRepository
   ) {}
 
-  async getMemberList(user: string) {
+  async getMember(user: string) {
     return await this.memberRepository.getOneRow(user);
   }
 
-  async getAllMemberList(clientId: number) {
-    return await this.memberRepository.getAllInviteUsersRow(clientId);
+  async getMemberList(clientId: number, roomId: null | string) {
+    let users;
+    let inviteUser: Array<number> = [clientId];
+    if (roomId) {
+      users = await this.chatMemberRepository.getUserRow(roomId, clientId);
+      for (const data of users) {
+        inviteUser.push(data.mbNo);
+      }
+    }
+    return await this.memberRepository.getUsersRow(inviteUser);
   }
 
-  async createChatRoom(client, { userList }) {
+  async getInviteMemberList(client, userList) {
     userList.push(client.data.no);
+    return await this.memberRepository.getInviteUsersRow(userList);
+  }
 
+  async createChatMember(userData, chatRoom) {
+    const chatList: Array<object> = [];
+
+    for (const data of userData) {
+      chatList.push({ chatNo: chatRoom.chatNo, mbNo: data.mbNo });
+    }
+    await this.chatMemberRepository.inertRow(chatList);
+  }
+
+  async createChatRoom(client, userData) {
     let roomName: string;
-    const userNameArr: Array<string> = [];
-    const chatListArr: Array<object> = [];
+    const userName: Array<string> = [];
 
-    const userData: MemberEntity[] = await this.memberRepository.getAllUsersRow(
-      userList
-    );
+    for (const data of userData) {
+      userName.push(data.mbName);
+    }
+    roomName = userName.join();
 
-    userData.forEach((data) => {
-      userNameArr.push(data.mbName);
-    });
-
-    roomName = userNameArr.join();
-
-    const chatList: ChatListEntity = await this.chatListRepository.insertRow({
+    const chatRoom: ChatListEntity = await this.chatListRepository.insertRow({
       chatRoom: roomName,
     });
 
-    for (const data of userData) {
-      chatListArr.push({ chatNo: chatList.chatNo, mbNo: data.mbNo });
-    }
+    return chatRoom;
+  }
 
-    await this.chatMemberRepository.inertRow(chatListArr);
-
+  async emitNewChatList(client, userData) {
     for (const data of userData) {
       const members = await this.getChatRoomList(data.mbNo);
-
       client.to(data.mbNo).emit("getNewChatList", members);
     }
   }
@@ -124,7 +134,6 @@ export class EventsService {
   }
 
   async createUploadFiles(files, userData) {
-    console.log(userData);
     const fileArr = [];
     files.forEach((data) => {
       fileArr.push({

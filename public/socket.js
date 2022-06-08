@@ -207,7 +207,7 @@ const handleInviteEvent = () => {
         isRoomId = chatUserInfo.room.roomId;
       }
 
-      socket.emit("inviteUsers", isRoomId, (response) => {
+      socket.emit("getMemberList", isRoomId, (response) => {
         response.forEach((user, i) => {
           const li = document.createElement("li");
           const label = document.createElement("label");

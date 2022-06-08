@@ -54,7 +54,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
 
-    const user = await this.ChatRoomService.getMemberList(data.userId);
+    const user = await this.ChatRoomService.getMember(data.userId);
 
     if (!user) return false;
 
@@ -85,7 +85,29 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("createChatRoom")
   async createChatRoom(client: Socket, userList) {
-    await this.ChatRoomService.createChatRoom(client, { userList });
+    const userData = await this.ChatRoomService.getInviteMemberList(
+      client,
+      userList
+    );
+
+    const chatRoom = await this.ChatRoomService.createChatRoom(
+      client,
+      userData
+    );
+    await this.ChatRoomService.createChatMember(userData, chatRoom);
+    await this.ChatRoomService.emitNewChatList(client, userData);
+
+    return await this.ChatRoomService.getChatRoomList(client.data.no);
+  }
+
+  @SubscribeMessage("createChatMember")
+  async createChatMember(client: Socket, userList, roomId) {
+    const userData = await this.ChatRoomService.getInviteMemberList(
+      client,
+      userList
+    );
+    await this.ChatRoomService.createChatMember(userData, roomId);
+
     return await this.ChatRoomService.getChatRoomList(client.data.no);
   }
 
@@ -98,8 +120,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return await this.ChatRoomService.enterChatRoom(client, roomId);
   }
 
-  @SubscribeMessage("inviteUsers")
-  selectInviteUser(client: Socket) {
-    return this.ChatRoomService.getAllMemberList(client.data.id);
+  @SubscribeMessage("getMemberList")
+  async getMemberList(client: Socket, roomId: null | string) {
+    return await this.ChatRoomService.getMemberList(client.data.no, roomId);
   }
 }
