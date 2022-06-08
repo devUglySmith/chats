@@ -176,6 +176,7 @@ img {
     position: relative;
 }
 .msg_send_btn,
+.sub_invite_btn,
 .msg_upload_btn{
     background: #05728f none repeat scroll 0 0;
     border: medium none;
@@ -189,7 +190,10 @@ img {
     top: 11px;
     width: 33px;
 }
-
+button.sub_invite_btn{
+    left:0;
+    top:-50px;
+}
 label.msg_upload_btn{
     right: 40px;
     text-align: center;

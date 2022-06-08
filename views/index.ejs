@@ -20,7 +20,7 @@
                                 <h4>채팅방</h4>
                             </div>
                             <div class="chatroom_btn_place">
-                                <button type="button" id="inviteButton" class="chatroom_btn"> <i class="fa fa-users" aria-hidden="true"></i> </button>
+                                <button type="button" id="inviteButton" class="chatroom_btn invite-button" data-type="new"> <i class="fa fa-users" aria-hidden="true"></i> </button>
                             </div>
                         </div>
                         <div id="chatRoomList" class="inbox_chat chatRoomList">
@@ -33,6 +33,7 @@
                             <div class="input_msg_write">
                                 <input type="text" id="writeBox" class="write_msg" placeholder="Type a message" />
                                 <label for="uploadButton" class="msg_upload_btn"><i class="fa fa-upload" aria-hidden="true"></i></label>
+                                <button id="PartialInvite" class="sub_invite_btn sendMessage invite-button" type="button" data-type="sub"><i class="fa fa-user-plus"></i></button>
                                 <input type="file" id="uploadButton" class="sendMessage" name="fileUpload[]" style="display:none" multiple>
                                 <button id="sendButton" class="msg_send_btn sendMessage" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
                             </div>

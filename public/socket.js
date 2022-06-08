@@ -1,4 +1,4 @@
-const inviteButton = document.querySelector("#inviteButton");
+const inviteButton = document.querySelectorAll(".invite-button");
 const inviteJoinButton = document.querySelector("#inviteRequestButton");
 const inviteModal = document.querySelector("#inviteModal");
 const inviteCloseButton = document.querySelector("#closeButton");
@@ -19,12 +19,13 @@ let chatUserInfo = {
   },
 };
 
+let inviteFlag = false;
 let userId;
 let members;
 let chatList;
 let userList = [];
 
-const socket = io('http://localhost:8080');
+const socket = io("http://localhost:8080");
 // const socket = io('http://192.168.0.92:8080');
 // const socket = io("http://192.168.0.37:8080");
 // const socket = io('http://chattalk.uglysmith.co.kr:8080');
@@ -160,6 +161,8 @@ const handleSocketJoinRoom = (e) => {
       data.classList.remove("active_chat");
     });
     thisRoom.classList.add("active_chat");
+    inviteFlag = true;
+
     //메세지 가져오기
     drawMessage(chatUserInfo, res);
   });
@@ -186,45 +189,59 @@ const handleSocketEvent = () => {
  * 채팅 초대 이벤트
  */
 const handleInviteEvent = () => {
-  inviteButton.addEventListener("click", () => {
-    ul.innerHTML = "";
-    inviteModal.classList.add("invite");
+  inviteButton.forEach((btn) => {
+    let btnType = btn.getAttribute("data-type");
+    let isRoomId = null;
 
-    //초대할 유저 리스트 생성
-    socket.emit("inviteUsers", null, (response) => {
-      response.forEach((user, i) => {
-        const li = document.createElement("li");
-        const label = document.createElement("label");
-        const input = document.createElement("input");
+    btn.addEventListener("click", () => {
+      if (!inviteFlag && btnType === "sub") {
+        alert("방에 입장한 후 초대할 수 있습니다.");
+        return false;
+      }
 
-        setAttribute(input, {
-          id: `user${i}`,
-          class: "user-checkbox",
-          type: "checkbox",
-          "data-no": `${response[i].mbNo}`,
-        });
+      ul.innerHTML = "";
+      inviteModal.classList.add("invite");
 
-        li.setAttribute("class", "user-list");
-        label.setAttribute("for", `user${i}`);
-        label.innerText = response[i].mbName;
+      //초대할 유저 리스트 생성
+      if (btnType === "sub") {
+        isRoomId = chatUserInfo.room.roomId;
+      }
 
-        li.appendChild(label);
-        li.appendChild(input);
-        ul.appendChild(li);
+      socket.emit("inviteUsers", isRoomId, (response) => {
+        response.forEach((user, i) => {
+          const li = document.createElement("li");
+          const label = document.createElement("label");
+          const input = document.createElement("input");
 
-        members = document.querySelectorAll(".user-checkbox");
+          setAttribute(input, {
+            id: `user${i}`,
+            class: "user-checkbox",
+            type: "checkbox",
+            "data-no": `${response[i].mbNo}`,
+          });
 
-        // 유저 클릭 체크 확인 이벤트
-        members[i].addEventListener("click", function () {
-          let userNo = parseInt(this.getAttribute("data-no"));
-          if (!this.checked) {
-            let index = userList.indexOf(userNo);
-            if (index > -1) {
-              userList.splice(index, 1);
+          li.setAttribute("class", "user-list");
+          label.setAttribute("for", `user${i}`);
+          label.innerText = response[i].mbName;
+
+          li.appendChild(label);
+          li.appendChild(input);
+          ul.appendChild(li);
+
+          members = document.querySelectorAll(".user-checkbox");
+
+          // 유저 클릭 체크 확인 이벤트
+          members[i].addEventListener("click", function () {
+            let userNo = parseInt(this.getAttribute("data-no"));
+            if (!this.checked) {
+              let index = userList.indexOf(userNo);
+              if (index > -1) {
+                userList.splice(index, 1);
+              }
+            } else {
+              userList.push(userNo);
             }
-          } else {
-            userList.push(userNo);
-          }
+          });
         });
       });
     });
