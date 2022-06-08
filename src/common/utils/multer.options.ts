@@ -23,12 +23,10 @@ const storage = (folder: string): multer.StorageEngine => {
   createFolder(folder);
   return multer.diskStorage({
     destination(req, file, cb) {
-      // 어디에 저장할 지
       const folderName = path.join(__dirname, "..", `uploads/${folder}`);
       cb(null, folderName);
     },
     filename(req, file, cb) {
-      // 어떤 이름으로 저장할 지
       const ext = path.extname(file.originalname);
 
       const fileName = `${path.basename(

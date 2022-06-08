@@ -103,7 +103,6 @@ export class ChatRoomService {
     });
   }
 
-  // sendInfo : 방 No, 메세지
   async createChatMessage(client, sendInfo) {
     const chatData = {
       cmContent: sendInfo.message,
