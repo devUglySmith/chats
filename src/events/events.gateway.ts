@@ -6,7 +6,7 @@ import {
   OnGatewayDisconnect,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { ChatRoomService } from "./chatRoom.service";
+import { EventsService } from "./events.service";
 import { setInitDTO } from "./dto/chatBackEnd.dto";
 
 @WebSocketGateway(8080, {
@@ -16,10 +16,8 @@ import { setInitDTO } from "./dto/chatBackEnd.dto";
     allowEI03: true,
   },
 })
-export class ChatBackEndGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
-  constructor(private readonly ChatRoomService: ChatRoomService) {}
+export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private readonly ChatRoomService: EventsService) {}
   @WebSocketServer()
   server: Server;
 

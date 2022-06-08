@@ -6,15 +6,15 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { ChatRoomService } from "./chatRoom.service";
+import { EventsService } from "./events.service";
 import { multerOptions } from "../common/utils/multer.options";
-import { ChatBackEndGateway } from "./chatBackEnd.gateway";
+import { EventsGateway } from "./events.gateway";
 
 @Controller("upload")
-export class ChatBackEndController {
+export class EventsController {
   constructor(
-    private readonly ChatRoomService: ChatRoomService,
-    private readonly ChatBackEndGateway: ChatBackEndGateway
+    private readonly ChatRoomService: EventsService,
+    private readonly ChatBackEndGateway: EventsGateway
   ) {}
   @Post()
   @UseInterceptors(FilesInterceptor("files", 3, multerOptions("files")))

@@ -1,6 +1,6 @@
 import { getRepository } from "typeorm";
 import { ChatListEntity } from "./entities/chatList.entity";
-import { ChatListDto } from "../chatBackEnd/dto/chatList.dto";
+import { ChatListDto } from "../events/dto/chatList.dto";
 
 export class ChatListRepository {
   public async getChatListRow(chatNoArr: Array<object>) {

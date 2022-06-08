@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
-import { ChatBackEndModule } from "./chatBackEnd/chatBackEnd.module";
-import { ChatFrontEndModule } from "./chatFrontEnd/chatFrontEnd.module";
+import { EventsModule } from "./events/events.module";
+import { ClientModule } from "./client/client.module";
 import { DatabaseModule } from "./providers/database/database.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DatabaseService } from "./providers/database/database.service";
@@ -10,8 +10,8 @@ import { Connection } from "typeorm";
 
 @Module({
   imports: [
-    ChatBackEndModule,
-    ChatFrontEndModule,
+    EventsModule,
+    ClientModule,
     DatabaseModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -29,5 +29,5 @@ import { Connection } from "typeorm";
   ],
 })
 export class AppModule {
-  constructor(private connection: Connection) {}
+  constructor() {}
 }

@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { ChatBackEndGateway } from "./chatBackEnd.gateway";
-import { ChatRoomService } from "./chatRoom.service";
-import { ChatBackEndController } from "./chatBackEnd.controller";
+import { EventsGateway } from "./events.gateway";
+import { EventsService } from "./events.service";
+import { EventsController } from "./events.controller";
 import { MulterModule } from "@nestjs/platform-express";
 import { MemberRepository } from "../repositories/member.repository";
 import { ChatListRepository } from "../repositories/chatList.repository";
@@ -18,14 +18,14 @@ import { ChatFileRepository } from "../repositories/chatFile.repository";
     }),
   ],
   providers: [
-    ChatBackEndGateway,
-    ChatRoomService,
+    EventsGateway,
+    EventsService,
     MemberRepository,
     ChatMemberRepository,
     ChatListRepository,
     ChatMessageRepository,
     ChatFileRepository,
   ],
-  controllers: [ChatBackEndController],
+  controllers: [EventsController],
 })
-export class ChatBackEndModule {}
+export class EventsModule {}

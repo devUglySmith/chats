@@ -12,7 +12,7 @@ import { ChatMessageRepository } from "../repositories/chatMessage.repository";
 import { ChatFileRepository } from "../repositories/chatFile.repository";
 
 @Injectable()
-export class ChatRoomService {
+export class EventsService {
   constructor(
     private readonly memberRepository: MemberRepository,
     private readonly chatMemberRepository: ChatMemberRepository,

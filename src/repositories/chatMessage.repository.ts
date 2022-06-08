@@ -1,4 +1,4 @@
-import { ChatMessageDto } from "../chatBackEnd/dto/chatMessage.dto";
+import { ChatMessageDto } from "../events/dto/chatMessage.dto";
 import { getRepository } from "typeorm";
 import { ChatMessageEntity } from "./entities/chatMessage.entity";
 
