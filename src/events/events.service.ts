@@ -66,6 +66,8 @@ export class EventsService {
     return chatRoom;
   }
 
+  async updateChatRoom() {}
+
   async emitNewChatList(client, userData) {
     for (const data of userData) {
       const members = await this.getChatRoomList(data.mbNo);
@@ -91,6 +93,7 @@ export class EventsService {
 
   async enterChatRoom(client: Socket, roomId) {
     client.data.roomId = roomId;
+
     client.rooms.clear();
     client.join(roomId);
     const entityManager: EntityManager = getManager();

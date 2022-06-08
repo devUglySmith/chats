@@ -24,22 +24,9 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   public handleConnection(client: Socket) {
     console.log("connected", client.id);
     client.leave(client.id);
-    client.data.roomId = `room:lobby`;
-    client.join("room:lobby");
   }
 
   public handleDisconnect(client: Socket) {
-    const { roomId } = client.data;
-    if (
-      roomId != "room:lobby" &&
-      !this.server.sockets.adapter.rooms.get(roomId)
-    ) {
-      this.ChatRoomService.deleteChatRoom(roomId);
-      this.server.emit(
-        "getChatRoomList",
-        this.ChatRoomService.getChatRoomList(client.data.no)
-      );
-    }
     console.log("disonnected", client.id);
   }
 
@@ -64,7 +51,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.data.isInit = true;
 
     const roomList = await this.ChatRoomService.getChatRoomList(client.data.no);
-
     client.join(client.data.no);
 
     return {
@@ -106,7 +92,12 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client,
       userList
     );
+
+    // TODO updateChatRoom
+
     await this.ChatRoomService.createChatMember(userData, roomId);
+
+    // TODO emitNewChatList
 
     return await this.ChatRoomService.getChatRoomList(client.data.no);
   }
