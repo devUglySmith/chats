@@ -13,6 +13,7 @@ export class ChatMessageRepository {
       .where(`chat.chatNo=${roomId}`)
       .andWhere("chat.cmDelyn='N'")
       .select([
+        "chat.cmNo AS messageId",
         "chat.cmContent AS message",
         "chat.cmRegdate AS messageDate",
         "member.mbId AS id",

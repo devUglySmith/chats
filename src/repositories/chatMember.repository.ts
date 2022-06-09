@@ -16,6 +16,15 @@ export class ChatMemberRepository {
     });
   }
 
+  public async getInviteUserRow(roomId) {
+    return getRepository(ChatMemberEntity)
+      .createQueryBuilder("chatMember")
+      .select(["member.mbNo AS mbNo", "member.mbName AS mbName"])
+      .where("chatMember.chatNo=:roomId", { roomId })
+      .leftJoin("chatMember.mbNo2", "member")
+      .getRawMany();
+  }
+
   public async inertRow(chatListUsers: Array<object>) {
     return await getRepository(ChatMemberEntity).save(chatListUsers);
   }

@@ -1,7 +1,14 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { ChatMemberEntity } from "./chatMember.entity";
 import { ChatMessageEntity } from "./chatMessage.entity";
-import {ChatFilesEntity} from "./chatFiles.entity";
+import { ChatFilesEntity } from "./chatFiles.entity";
+import { ChatStatusEntity } from "./chatStatus.entity";
 
 @Entity("aaaa__member", { schema: "chattalk" })
 export class MemberEntity {
@@ -141,9 +148,15 @@ export class MemberEntity {
   @OneToMany(() => ChatMemberEntity, (aaaaChatMember) => aaaaChatMember.mbNo2)
   aaaaChatMembers: ChatMemberEntity[];
 
-  @OneToMany(() => ChatMessageEntity, (aaaaChatMessage) => aaaaChatMessage.mbNo2)
+  @OneToMany(
+    () => ChatMessageEntity,
+    (aaaaChatMessage) => aaaaChatMessage.mbNo2
+  )
   aaaaChatMessages: ChatMessageEntity[];
 
   @OneToMany(() => ChatFilesEntity, (aaaaChatFiles) => aaaaChatFiles.mbNo2)
   aaaaChatFiles: ChatFilesEntity[];
+
+  @OneToMany(() => ChatStatusEntity, (aaaaChatStatus) => aaaaChatStatus.mbNo2)
+  aaaaChatStatus: ChatStatusEntity[];
 }

@@ -1,4 +1,10 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { ChatFilesEntity } from "./chatFiles.entity";
 import { ChatMemberEntity } from "./chatMember.entity";
 import { ChatMessageEntity } from "./chatMessage.entity";
@@ -26,7 +32,12 @@ export class ChatListEntity {
   })
   chatDisplay: string;
 
-  @Column("char", { name: "chat_delyn", comment: "삭제여부", length: 1 , default: ()=> "'N'"})
+  @Column("char", {
+    name: "chat_delyn",
+    comment: "삭제여부",
+    length: 1,
+    default: () => "'N'",
+  })
   chatDelyn: string;
 
   @CreateDateColumn({

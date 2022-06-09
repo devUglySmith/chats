@@ -8,6 +8,8 @@ import { ChatListRepository } from "../repositories/chatList.repository";
 import { ChatMemberRepository } from "../repositories/chatMember.repository";
 import { ChatMessageRepository } from "../repositories/chatMessage.repository";
 import { ChatFileRepository } from "../repositories/chatFile.repository";
+import { Helpers } from "../common/helper/helpers";
+import { ChatStatusRepository } from "../repositories/chatStatus.repository";
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { ChatFileRepository } from "../repositories/chatFile.repository";
     ChatListRepository,
     ChatMessageRepository,
     ChatFileRepository,
+    ChatStatusRepository,
+    Helpers,
   ],
   controllers: [EventsController],
 })

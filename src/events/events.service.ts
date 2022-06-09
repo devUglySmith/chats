@@ -9,6 +9,9 @@ import { ChatListEntity } from "../repositories/entities/chatList.entity";
 import { ChatMemberRepository } from "../repositories/chatMember.repository";
 import { ChatMessageRepository } from "../repositories/chatMessage.repository";
 import { ChatFileRepository } from "../repositories/chatFile.repository";
+import { Helpers } from "../common/helper/helpers";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { ChatStatusRepository } from "../repositories/chatStatus.repository";
 
 @Injectable()
 export class EventsService {
@@ -17,7 +20,9 @@ export class EventsService {
     private readonly chatMemberRepository: ChatMemberRepository,
     private readonly chatListRepository: ChatListRepository,
     private readonly chatMessageRepository: ChatMessageRepository,
-    private readonly chatFileRepository: ChatFileRepository
+    private readonly chatFileRepository: ChatFileRepository,
+    private readonly chatStatusRepository: ChatStatusRepository,
+    private readonly helper: Helpers
   ) {}
 
   async getMember(user: string) {
@@ -36,9 +41,22 @@ export class EventsService {
     return await this.memberRepository.getUsersRow(inviteUser);
   }
 
-  async getInviteMemberList(client, userList) {
-    userList.push(client.data.no);
+  async getInviteMemberList(
+    userList,
+    client?: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+  ) {
+    if (client) {
+      userList.push(client.data.no);
+    }
     return await this.memberRepository.getInviteUsersRow(userList);
+  }
+
+  async getRoomInviteMemberList(roomId) {
+    return await this.chatMemberRepository.getInviteUserRow(roomId);
+  }
+
+  async getRoomEnterStatus(roomId, client) {
+    return await this.chatStatusRepository.getOneRow(roomId, client.data.no);
   }
 
   async createChatMember(userData, chatRoom) {
@@ -51,14 +69,7 @@ export class EventsService {
   }
 
   async createChatRoom(client, userData) {
-    let roomName: string;
-    const userName: Array<string> = [];
-
-    for (const data of userData) {
-      userName.push(data.mbName);
-    }
-    roomName = userName.join();
-
+    const roomName = await this.helper.makeRoomName(userData);
     const chatRoom: ChatListEntity = await this.chatListRepository.insertRow({
       chatRoom: roomName,
     });
@@ -66,7 +77,15 @@ export class EventsService {
     return chatRoom;
   }
 
-  async updateChatRoom() {}
+  async updateChatRoom(userData, roomId) {
+    const roomName = await this.helper.makeRoomName(userData);
+    return await this.chatListRepository.updateRow(
+      {
+        chatRoom: roomName,
+      },
+      roomId
+    );
+  }
 
   async emitNewChatList(client, userData) {
     for (const data of userData) {

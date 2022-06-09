@@ -72,8 +72,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("createChatRoom")
   async createChatRoom(client: Socket, userList) {
     const userData = await this.ChatRoomService.getInviteMemberList(
-      client,
-      userList
+      userList,
+      client
     );
 
     const chatRoom = await this.ChatRoomService.createChatRoom(
@@ -82,24 +82,18 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     await this.ChatRoomService.createChatMember(userData, chatRoom);
     await this.ChatRoomService.emitNewChatList(client, userData);
-
-    return await this.ChatRoomService.getChatRoomList(client.data.no);
   }
 
   @SubscribeMessage("createChatMember")
   async createChatMember(client: Socket, { userList, roomId }) {
-    const userData = await this.ChatRoomService.getInviteMemberList(
-      client,
-      userList
-    );
-
-    // TODO updateChatRoom
-
+    const userData = await this.ChatRoomService.getInviteMemberList(userList);
     await this.ChatRoomService.createChatMember(userData, { chatNo: roomId });
 
-    // TODO emitNewChatList
-
-    return await this.ChatRoomService.getChatRoomList(client.data.no);
+    const inviteUsers = await this.ChatRoomService.getRoomInviteMemberList(
+      roomId
+    );
+    await this.ChatRoomService.updateChatRoom(inviteUsers, roomId);
+    await this.ChatRoomService.emitNewChatList(client, inviteUsers);
   }
 
   @SubscribeMessage("enterChatRoom")
@@ -110,6 +104,11 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     return await this.ChatRoomService.enterChatRoom(client, roomId);
   }
+
+  // TODO
+  // 3.채팅 방 들어왔을때 메세지 별로 읽음 처리
+  // 4.메세지 그려줄 때 몇명 안읽었는지 카운트 전달
+  // 총 채팅방 멤버수 - 메세지ID가 상태_메세지ID 안에 있으면 카운트 = 해당 메세지의 안읽은 수
 
   @SubscribeMessage("getMemberList")
   async getMemberList(client: Socket, roomId: null | string) {

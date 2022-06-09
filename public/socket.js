@@ -184,10 +184,10 @@ const handleSocketEvent = () => {
  */
 const handleInviteEvent = () => {
   inviteButton.forEach((btn) => {
-    btnType = btn.getAttribute("data-type");
     let isRoomId = null;
 
     btn.addEventListener("click", () => {
+      btnType = btn.getAttribute("data-type");
       if (!inviteFlag && btnType === "sub") {
         alert("방에 입장한 후 초대할 수 있습니다.");
         return false;

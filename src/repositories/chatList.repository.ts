@@ -12,4 +12,12 @@ export class ChatListRepository {
   public async insertRow(roomName: ChatListDto) {
     return await getRepository(ChatListEntity).save(roomName);
   }
+  public async updateRow(roomName: ChatListDto, chatNo) {
+    return await getRepository(ChatListEntity)
+      .createQueryBuilder()
+      .update()
+      .set(roomName)
+      .where("chatNo=:chatNo", { chatNo })
+      .execute();
+  }
 }

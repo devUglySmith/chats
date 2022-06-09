@@ -10,6 +10,7 @@ export class ChatFileRepository {
       .createQueryBuilder("file")
       .where(`file.chatNo=${roomId}`)
       .select([
+        "file.cfNo AS fileId",
         "file.cfFile AS message",
         "file.cfRegdate AS messageDate",
         "member.mbId AS id",
