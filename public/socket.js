@@ -20,6 +20,7 @@ let chatUserInfo = {
 };
 
 let inviteFlag = false;
+let btnType;
 let userId;
 let members;
 let chatList;
@@ -141,13 +142,6 @@ const handleSocketGetRoomList = () => {
 };
 
 /*
- * 채팅방 초대 (방 생성)
- */
-const handleSocketInviteRoom = () => {
-  socket.on("createChatRoom", userList);
-};
-
-/*
  * 채팅방 입장
  */
 const handleSocketJoinRoom = (e) => {
@@ -190,7 +184,7 @@ const handleSocketEvent = () => {
  */
 const handleInviteEvent = () => {
   inviteButton.forEach((btn) => {
-    let btnType = btn.getAttribute("data-type");
+    btnType = btn.getAttribute("data-type");
     let isRoomId = null;
 
     btn.addEventListener("click", () => {
@@ -251,13 +245,18 @@ const handleInviteEvent = () => {
   inviteJoinButton.addEventListener("click", () => {
     console.log(userList);
     if (userList.length !== 0) {
-      socket.emit("createChatRoom", userList);
+      if (btnType === "sub") {
+        socket.emit("createChatMember", {
+          userList: userList,
+          roomId: chatUserInfo.room.roomId,
+        });
+      } else {
+        socket.emit("createChatRoom", userList);
+      }
 
       alert("초대를 완료했습니다.");
       inviteModal.classList.remove("invite");
 
-      // 채팅방 생성 및 초대
-      handleSocketInviteRoom();
       userList = [];
     } else {
       alert("초대할 멤버를 체크해주세요.");

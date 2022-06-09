@@ -87,7 +87,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("createChatMember")
-  async createChatMember(client: Socket, userList, roomId) {
+  async createChatMember(client: Socket, { userList, roomId }) {
     const userData = await this.ChatRoomService.getInviteMemberList(
       client,
       userList
@@ -95,7 +95,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // TODO updateChatRoom
 
-    await this.ChatRoomService.createChatMember(userData, roomId);
+    await this.ChatRoomService.createChatMember(userData, { chatNo: roomId });
 
     // TODO emitNewChatList
 
